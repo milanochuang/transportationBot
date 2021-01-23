@@ -212,7 +212,7 @@ def amountSTRConvert(inputSTR):
     resultDICT = articut.parse(inputSTR, level="lv3")
     return resultDICT['number']
 
-def ticket(message):
+def ticketTime(message):
     curl = "curl"
     if CURL_PATH != "":
         curl = CURL_PATH
@@ -235,14 +235,23 @@ def ticket(message):
             continue
     response.sort()
     return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0])
+def ticketPrice(message):
+    # curl = "curl"
+    # if CURL_PATH != "":
+    #     curl = CURL_PATH
+    inputLIST = [message]
+    resultDICT = runLoki(inputLIST)
+    adultAmount = int(resultDICT['adultAmount'])
+    childrenAmount = int(resultDICT['childrenAmount'])
+    totalPrice = 1490*adultAmount + 745*childrenAmount
+    return "從台北到左營的票價為{}元".format(totalPrice)
+
 if __name__ == "__main__":
-    curl = "curl"
-    if CURL_PATH != "":
-        curl = CURL_PATH
     # inputLIST = ["三十分出發的高鐵"]
     # resultDICT = runLoki(inputLIST)
     # #time = amountSTRConvert(resultDICT['time'])
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticket('我要一張七點四十六分到台南的票'))
+    # print(ticketTime('七點四十六分台北到台南的票一張'))
+    print(ticketPrice('五大三小'))
