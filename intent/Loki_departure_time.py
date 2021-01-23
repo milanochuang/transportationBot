@@ -99,7 +99,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['hour'] = datetime[0][0]["time_span"]["hour"][0]
         resultDICT['minute'] = datetime[0][0]["time_span"]["minute"][0]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:]
+        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
         resultDICT['ticketAmount'] = args[0][0]
         pass
 

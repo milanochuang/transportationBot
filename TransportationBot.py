@@ -220,22 +220,24 @@ def ticket(message):
     resultDICT = runLoki(inputLIST)
     ticketAmount = amountSTRConvert(resultDICT['ticketAmount'])
     departure = "台北"
-    train_date = dt.now().strftime('%Y-%m-%m')
+    train_date = dt.now().strftime('%Y-%m-%d')
     hour = resultDICT['hour']
     minute = resultDICT['minute']
     time = resultDICT['time']
+    print(resultDICT)
+    dtMessageTime = dt.strptime(time, "%H:%M")
     destination = resultDICT['destination']
     destinationID = getTrainStation(curl, destination)
     departureID = getTrainStation(curl, departure)
     result = getTrainStationStartEnd(curl, departureID, destinationID, train_date)
+    response=list()
     for train in result:
-        response=[]
-        if dt.now().replace(hour=int(train['OriginStopTime']['DepartureTime'][:2]), minute=int(train['OriginStopTime']['DepartureTime'][-2:]))>dt.now():
-            response.append(train["DailyTrainInfo"]["TrainNo"])
-            
-        else:
+        dtScheduleTime = dt.strptime(train['OriginStopTime']['DepartureTime'], "%H:%M")
+        if(dtScheduleTime > dtMessageTime):
+            response.append(train['OriginStopTime']['DepartureTime'])
             continue
-    return response
+    print(response)   
+    return "以下是您可搭乘的班次時間:{}".format(response)
 if __name__ == "__main__":
     curl = "curl"
     if CURL_PATH != "":
