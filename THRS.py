@@ -21,7 +21,7 @@ stationDICT=[
             {'stationName': '雲林', 'stationID': '1047'},
             {'stationName': '嘉義', 'stationID': '1050'},
             {'stationName': '台南', 'stationID': '1060'},
-            {'stationName': '高雄', 'stationID': '1070'},
+            {'stationName': '左營', 'stationID': '1070'},
             ]
 
 def getCurl(curl, url):

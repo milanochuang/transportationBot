@@ -41,8 +41,12 @@
             ]
         }
 """
-import THRS as hr
+from THRS import *
 import requests
+import time
+import datetime
+dt = datetime.datetime
+
 try:
     from intent import Loki_departure_time
     from intent import Loki_destination_time
@@ -209,29 +213,37 @@ def amountSTRConvert(inputSTR):
     return resultDICT['number']
 
 def ticket(message):
-    inputList = [message]
+    curl = "curl"
+    if CURL_PATH != "":
+        curl = CURL_PATH
+    inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     ticketAmount = amountSTRConvert(resultDICT['ticketAmount'])
     departure = "台北"
-    train_date = "2021-01-21"
+    train_date = dt.now().strftime('%Y-%m-%m')
     hour = resultDICT['hour']
     minute = resultDICT['minute']
+    time = resultDICT['time']
     destination = resultDICT['destination']
-    destinationID = hr.getTrainStation(curl, destination)
-    hr.getTrainStationStartEnd()
-    return "你的高鐵票錢需要{}元".format(totalTicketPrice)
-
+    destinationID = getTrainStation(curl, destination)
+    departureID = getTrainStation(curl, departure)
+    result = getTrainStationStartEnd(curl, departureID, destinationID, train_date)
+    for train in result:
+        response=[]
+        if dt.now().replace(hour=int(train['OriginStopTime']['DepartureTime'][:2]), minute=int(train['OriginStopTime']['DepartureTime'][-2:]))>dt.now():
+            response.append(train["DailyTrainInfo"]["TrainNo"])
+            
+        else:
+            continue
+    return response
 if __name__ == "__main__":
     curl = "curl"
     if CURL_PATH != "":
         curl = CURL_PATH
-    inputLIST = ["五點五十八分台北到左營的票三張"]
-    resultDICT = runLoki(inputLIST)
-    #time = amountSTRConvert(resultDICT['time'])
-    print("Result => {}".format(resultDICT))
-    ticketAmount = amountSTRConvert(resultDICT['ticketAmount'])
-    hour = resultDICT['hour']
-    minute = resultDICT['minute']
-    destination = resultDICT['destination']
-    test = hr.getTrainStation(curl, destination)
-    print(test)
+    # inputLIST = ["三十分出發的高鐵"]
+    # resultDICT = runLoki(inputLIST)
+    # #time = amountSTRConvert(resultDICT['time'])
+    # print("Result => {}".format(resultDICT))
+    # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
+    # print(result)
+    print(ticket('我要一張七點四十六分到台南的票'))
