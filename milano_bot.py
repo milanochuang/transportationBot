@@ -5,7 +5,7 @@ import discord
 from TransportationBot import ticketTime
 
 
-DISCORD_TOKEN="Nzg5Mzc0ODk3OTA5Mzk5NjA1.X9xIqQ.ibCeCzoEvw7V1FtM70yPH6MQ9cM"
+DISCORD_TOKEN=""
 DISCORD_GUILD="Droidtown Linguistics Tech."
 BOT_NAME = "幫你買票機器人"
 
