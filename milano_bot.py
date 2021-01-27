@@ -5,7 +5,7 @@ import discord
 from TransportationBot import ticketTime
 
 
-DISCORD_TOKEN=""
+DISCORD_TOKEN="Nzg5Mzc0ODk3OTA5Mzk5NjA1.X9xIqQ.pQULJ3-j67EVpX9aleTSAO1kB_M"
 DISCORD_GUILD="Droidtown Linguistics Tech."
 BOT_NAME = "幫你買票機器人"
 
@@ -43,8 +43,8 @@ async def on_message(message):
             response = "有！"
             await message.channel.send(response)
         else:
-            response = ticketTime([message.content])
-            await message.message.send(message.content)
+            response = ticketTime(message.content)
+            await message.channel.send(response)
 
 
 
