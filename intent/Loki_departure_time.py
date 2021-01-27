@@ -65,6 +65,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['ticketAmount'] = args[2][0]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10] #抓articutAPI中time的日期（前十格）
         resultDICT['time'] = datetime[0][0]["datetime"][-8:-3] #抓articutAPI中time的時間（後八格）
+        print(resultDICT['time'])
         pass
 
     if utterance == "[九點][半]出發的票":
@@ -111,7 +112,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['hour'] = datetime[0][0]["time_span"]["hour"][0]
         resultDICT['minute'] = datetime[0][0]["time_span"]["minute"][0]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:]
+        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
         resultDICT['ticketAmount'] = args[0][0]
         resultDICT['destination'] = "左營"
         pass

@@ -220,8 +220,8 @@ def ticketTime(message):
     resultDICT = runLoki(inputLIST)
     departure = "台北"
     train_date = dt.now().strftime('%Y-%m-%d')
+    destination = resultDICT['destination']
     time = resultDICT['time']
-    # print(resultDICT)
     dtMessageTime = dt.strptime(time, "%H:%M")
     destination = resultDICT['destination']
     destinationID = getTrainStation(curl, destination)
@@ -247,11 +247,12 @@ def ticketPrice(message):
     return "從台北到左營的票價為{}元".format(totalPrice)
 
 if __name__ == "__main__":
-    # inputLIST = ["三十分出發的高鐵"]
+    # inputLIST = ["九點五十八分台北到台南的票一張"]
     # resultDICT = runLoki(inputLIST)
-    # #time = amountSTRConvert(resultDICT['time'])
+    # time = amountSTRConvert(resultDICT['time'])
+    # print(time)
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    # print(ticketTime('七點四十六分台北到台南的票一張'))
-    print(ticketPrice('五大三小'))
+    print(ticketTime('我要一張九點半出發的票'))
+    # print(ticketPrice('五大三小'))
