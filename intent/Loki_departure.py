@@ -39,4 +39,21 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['departure'] = args[1]
         pass
 
+    if utterance == "7:46[台北]到台南的票[一張]":
+        # write your code here
+        resultDICT['departure'] = args[0]
+        pass
+
+    if utterance == "[七點][四十六]分[台北]到台南的票[一張]":
+        # write your code here
+        resultDICT['departure'] = args[2]
+        pass
+    
+    if utterance == "[新竹]往台北":
+        # write your code here
+        resultDICT['departure'] = args[0]
+        pass
+    if utterance == "[新竹]到台北":
+        resultDICT['departure'] = args[0]
+        pass
     return resultDICT

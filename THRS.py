@@ -67,6 +67,28 @@ def getTrainStationStartEnd(curl, departure, destination, date):
     trainStationTimeUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/DailyTimetable/OD/{}/to/{}/{}?$top=30&$format=JSON".format(departure, destination, date)
     resultDICT = getCurl(curl, trainStationTimeUrl)
     return resultDICT
+def getTrainTimeTable():
+    """
+    GET /v2/Rail/THSR/DailyTrainInfo/Today
+    取得當天所有車次的車次資料
+    """
+    trainTimeTableUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/DailyTimetable/Today?$top=30&$format=JSON"
+    resultDICT = getCurl(curl, trainTimeTableUrl)
+    return resultDICT
+
+def getTrainTicketPrice():
+    """
+    GET /v2/Rail/THSR/ODFare
+    取得票價資料
+    """
+    TrainTicketPriceUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/ODFare?$format=JSON"
+    resultDICT = getCurl(curl, TrainTicketPriceUrl)
+    return resultDICT
+
+def getTimeTable():
+    timetableUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/GeneralTimetable?$format=JSON"
+    resultDICT = getCurl(curl, timetableUrl)
+    return resultDICT
 
 if __name__ == "__main__":
     # curl 路徑
@@ -80,27 +102,35 @@ if __name__ == "__main__":
     no   = "0657"
 
     departureStation = "南港"
-    destinationStation = "嘉義"
+    destinationStation = "高雄"
 
     # 取得指定日期車次資料
-    with open("THRS_date.json", "w", encoding="utf-8") as f:
-        result = getTrainDate(curl, date)
-        json.dump(result, f, ensure_ascii=False)
+    # with open("THRS_date.json", "w", encoding="utf-8") as f:
+    #     result = getTrainDate(curl, date)
+    #     json.dump(result, f, ensure_ascii=False)
 
-    #取得指定日期和車次資料
-    with open("THRS_date_no.json", "w", encoding="utf-8") as f:
-        result = getTrainNo(curl, date, no)
-        json.dump(result, f, ensure_ascii=False)
+    # #取得指定日期和車次資料
+    # with open("THRS_date_no.json", "w", encoding="utf-8") as f:
+    #     result = getTrainNo(curl, date, no)
+    #     json.dump(result, f, ensure_ascii=False)
     
-    #取得車站ID -> 可以使用到[時間][起迄]的函式
-    with open("THRS_station.json", "w", encoding="utf-8") as f:
-        result = getTrainStation(curl, departureStation)
-        json.dump(result, f, ensure_ascii=False)
+    # #取得車站ID -> 可以使用到[時間][起迄]的函式
+    # with open("THRS_station.json", "w", encoding="utf-8") as f:
+    #     result = getTrainStation(curl, departureStation)
+    #     json.dump(result, f, ensure_ascii=False)
 
     #取得指定時間和起訖車站
-    with open("THRS_station_start_end", "w", encoding = "utf-8") as f:
-        departureID = getTrainStation(curl, departureStation)
-        destinationID = getTrainStation(curl, destinationStation)
-        result = getTrainStationStartEnd(curl, departureID, destinationID, date)
-        json.dump(result, f, ensure_ascii=False)
-    
+    # with open("THRS_station_start_end.json", "w", encoding = "utf-8") as f:
+    #     result = getTrainStationStartEnd(curl, "0990", "1070", date)
+    #     json.dump(result, f, ensure_ascii = False)
+        
+    # with open("THRS_timetable.json", "w", encoding = "utf-8") as f:
+    #     result = getTrainTimeTable()
+    #     json.dump(result, f, ensure_ascii = False)
+
+    with open("THRS_ticketPrice.json", "w", encoding = "utf-8") as f:
+        result = getTrainTicketPrice()
+        json.dump(result, f, ensure_ascii = False)
+    with open("THRS_timetable.json", "w", encoding = "utf-8") as f:
+        result = getTimeTable()
+        json.dump(result, f, ensure_ascii = False)
