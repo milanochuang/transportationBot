@@ -43,7 +43,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # write your code here
         # resultDICT['hour'] = args[0]
         # resultDICT['minute'] = args[1]
-        # resultDICT['ticketAmount'] = args[2][0]
+        resultDICT['adultAmount'] = numberSTRConvert(args[2][0])[args[2][0]]
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
         resultDICT['time'] = args[0]+":"+args[1]
         pass

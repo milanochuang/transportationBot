@@ -9,7 +9,7 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from line_sdk import Linebot
-from TransportationBot import ticketTime
+from TransportationBot import ticketTime, ticketPrice
 from intent import Loki_departure_time
 from intent import Loki_destination_time
 from intent import Loki_destination
@@ -49,8 +49,8 @@ def webhook():
                     #linebot.respText(dataDICT["replyToken"], response)
                     #message()的回應是runLoki return回來的訊息
                     else:
-                        print(dataDICT["type"])
-                        linebot.respText(dataDICT["replyToken"], ticketTime(dataDICT["message"]))                        
+                        linebot.respText(dataDICT["replyToken"], ticketTime(dataDICT["message"]))
+                        # linebot.respText(dataDICT["replyToken"], ticketPrice(dataDICT["message"]))         
         return jsonify({"status": True, "msg": "Line Webhook Success."})
 
     # OTHER

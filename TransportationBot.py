@@ -66,7 +66,7 @@ except:
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
+LOKI_KEY = ""
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -239,41 +239,55 @@ def ticketTime(message):
         curl = CURL_PATH
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
-    departure = resultDICT['departure']
-    train_date = dt.now().strftime('%Y-%m-%d')
-    destination = resultDICT['destination']
-    time = resultDICT['time']
-    dtMessageTime = dt.strptime(time, "%H:%M")
-    destination = resultDICT['destination']
-    # destinationID = getTrainStation(curl, destination)
-    # departureID = getTrainStation(curl, departure)
-    result = loadJson("THRS_timetable.json")
-    # print(result[0]['GeneralTimetable']['StopTimes'][3]['DepartureTime'])
-    response=list()
-    DepartureTime = list()
-    for train in result:
-        # print(train['GeneralTimetable']["StopTimes"][0])
-        for stop in train['GeneralTimetable']["StopTimes"]:
-            if('DepartureTime' in stop):
-                dtScheduleTime = dt.strptime(stop['DepartureTime'], "%H:%M")
-                time_str = dt.strftime(dtScheduleTime, "%H:%M")
-                DepartureTime.append(time_str)
-                # print(dtScheduleTime)
-                if(departure == stop["StationName"]["Zh_tw"]):
-                    DepartureSeq = stop['StopSequence']
-                if(destination == stop["StationName"]["Zh_tw"]):
-                    DestinationSeq = stop['StopSequence']
-                for time in DepartureTime:
-                    dtDepartureTime = dt.strptime(time, "%H:%M")
-                    if(dtMessageTime < dtDepartureTime):
-                        response.append(time)
-                        # continue
-            """
-            要確認目的地的StopSequence要比出發地的大再回傳departure的DepartureTime
-            """
-    response.sort()
-    print(resultDICT)
-    return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0])
+    if('departure' in resultDICT and 'destination' in resultDICT):
+        departure = resultDICT['departure']
+        train_date = dt.now().strftime('%Y-%m-%d')
+        destination = resultDICT['destination']
+        time = resultDICT['time']
+        dtMessageTime = dt.strptime(time, "%H:%M")
+        destination = resultDICT['destination']
+        result = loadJson("THRS_timetable.json")
+        response=list()
+        DepartureTime = list()
+        for train in result:
+            for stop in train['GeneralTimetable']["StopTimes"]:
+                if('DepartureTime' in stop):
+                    dtScheduleTime = dt.strptime(stop['DepartureTime'], "%H:%M")
+                    time_str = dt.strftime(dtScheduleTime, "%H:%M")
+                    DepartureTime.append(time_str)
+                    if(departure == stop["StationName"]["Zh_tw"]):
+                        DepartureSeq = stop['StopSequence']
+                    if(destination == stop["StationName"]["Zh_tw"]):
+                        DestinationSeq = stop['StopSequence']
+                    for time in DepartureTime:
+                        dtDepartureTime = dt.strptime(time, "%H:%M")
+                        if(dtMessageTime < dtDepartureTime):
+                            response.append(time)
+                            # continue
+                """
+                要確認目的地的StopSequence要比出發地的大再回傳departure的DepartureTime
+                """
+        response.sort()
+        # if ('adultAmount' in resultDICT or 'childAmount' in resultDICT):
+        #     departure = resultDICT['departure']
+        #     destination = resultDICT['destination']
+        #     priceList = loadJson('THRS_ticketPrice.json')
+        #     for price in priceList:
+        #         if(departure == price['OriginStationName']['Zh_tw'] and destination == price['DestinationStationName']['Zh_tw']):
+        #             if('adultAmount' in resultDICT):
+        #                 adultAmount = int(resultDICT['adultAmount'])
+        #                 adultPrice = price['Fares'][3]['Price']
+        #             else:
+        #                 adultPrice = 0
+        #             if('childrenAmount' in resultDICT):
+        #                 childrenAmount = int(resultDICT['childrenAmount'])
+        #                 childrenPrice = 0.5*price['Fares'][2]['Price']
+        #             else:
+        #                 childrenPrice = 0
+        #             totalPrice = adultPrice*adultAmount + childrenPrice*childrenAmount
+        #     return "您所搭的高鐵票價是：{}，最近的班次時間是 {}".format(totalPrice, response[0])
+        return "以下是您指定時間可搭乘最接近的班次時間: {}".format(response[0])
+
 def ticketPrice(message):
     # curl = "curl"
     # if CURL_PATH != "":
@@ -293,6 +307,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('6:40台北到台南的票一張'))
+    print(ticketTime('7:51台北到台南的票一張'))
     # print(ticketPrice('五大三小'))
     
