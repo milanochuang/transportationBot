@@ -250,27 +250,29 @@ def ticketTime(message):
     result = loadJson("THRS_timetable.json")
     # print(result[0]['GeneralTimetable']['StopTimes'][3]['DepartureTime'])
     response=list()
+    DepartureTime = list()
     for train in result:
-        
-        # if(dtScheduleTime > dtMessageTime):
-        #     response.append(train['OriginStopTime']['DepartureTime'])
-        #     continue
         # print(train['GeneralTimetable']["StopTimes"][0])
         for stop in train['GeneralTimetable']["StopTimes"]:
-            if(stop['DepartureTime'] != None):
+            if('DepartureTime' in stop):
                 dtScheduleTime = dt.strptime(stop['DepartureTime'], "%H:%M")
-            if(departure == stop["StationName"]["Zh_tw"]):
-                DepartureSeq = stop['StopSequence']
-            if(destination == stop["StationName"]["Zh_tw"]):
-                DestinationSeq = stop['StopSequence']
-        if(DepartureSeq<DestinationSeq):
-            if(dtMessageTime > dtScheduleTime):
-                response.append(train['StopTimes']['DepartureTime'])
-                continue
+                time_str = dt.strftime(dtScheduleTime, "%H:%M")
+                DepartureTime.append(time_str)
+                # print(dtScheduleTime)
+                if(departure == stop["StationName"]["Zh_tw"]):
+                    DepartureSeq = stop['StopSequence']
+                if(destination == stop["StationName"]["Zh_tw"]):
+                    DestinationSeq = stop['StopSequence']
+                for time in DepartureTime:
+                    dtDepartureTime = dt.strptime(time, "%H:%M")
+                    if(dtMessageTime < dtDepartureTime):
+                        response.append(time)
+                        # continue
             """
             要確認目的地的StopSequence要比出發地的大再回傳departure的DepartureTime
             """
     response.sort()
+    print(resultDICT)
     return "以下是您指定時間可搭乘最接近的班次時間:{}".format(response[0])
 def ticketPrice(message):
     # curl = "curl"
@@ -291,6 +293,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('五點四十八分台北到台南的票一張'))
+    print(ticketTime('6:40台北到台南的票一張'))
     # print(ticketPrice('五大三小'))
     
