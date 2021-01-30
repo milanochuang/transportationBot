@@ -239,35 +239,37 @@ def ticketTime(message):
         curl = CURL_PATH
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
-    if('departure' in resultDICT and 'destination' in resultDICT):
-        departure = resultDICT['departure']
-        train_date = dt.now().strftime('%Y-%m-%d')
-        destination = resultDICT['destination']
-        time = resultDICT['time']
-        dtMessageTime = dt.strptime(time, "%H:%M")
-        destination = resultDICT['destination']
-        result = loadJson("THRS_timetable.json")
-        response=list()
-        DepartureTime = list()
-        for train in result:
-            for stop in train['GeneralTimetable']["StopTimes"]:
-                if('DepartureTime' in stop):
-                    dtScheduleTime = dt.strptime(stop['DepartureTime'], "%H:%M")
-                    time_str = dt.strftime(dtScheduleTime, "%H:%M")
-                    DepartureTime.append(time_str)
-                    if(departure == stop["StationName"]["Zh_tw"]):
-                        DepartureSeq = stop['StopSequence']
-                    if(destination == stop["StationName"]["Zh_tw"]):
-                        DestinationSeq = stop['StopSequence']
-                    for time in DepartureTime:
-                        dtDepartureTime = dt.strptime(time, "%H:%M")
-                        if(dtMessageTime < dtDepartureTime):
-                            response.append(time)
+    departure = resultDICT['departure']
+    train_date = dt.now().strftime('%Y-%m-%d')
+    destination = resultDICT['destination']
+    time = resultDICT['time']
+    dtMessageTime = dt.strptime(time, "%H:%M")
+    destination = resultDICT['destination']
+    result = loadJson("THRS_timetable.json")
+    response=list()
+    DepartureTime = list()
+    print(resultDICT)
+    for train in result:
+        for stop in train['GeneralTimetable']["StopTimes"]:
+            if('DepartureTime' in stop):
+                dtScheduleTime = dt.strptime(stop['DepartureTime'], "%H:%M")
+                time_str = dt.strftime(dtScheduleTime, "%H:%M")
+                DepartureTime.append(time_str)
+                if(departure == stop["StationName"]["Zh_tw"]):
+                    DepartureSeq = stop['StopSequence']
+                if(destination == stop["StationName"]["Zh_tw"]):
+                    DestinationSeq = stop['StopSequence']
+                for time in DepartureTime:
+                    dtDepartureTime = dt.strptime(time, "%H:%M")
+                    if(dtMessageTime < dtDepartureTime):
+                        response.append(time)
                             # continue
                 """
                 要確認目的地的StopSequence要比出發地的大再回傳departure的DepartureTime
                 """
-        response.sort()
+    response.sort()
+    return "以下是您指定時間可搭乘最接近的班次時間: {}".format(response[0])
+
         # if ('adultAmount' in resultDICT or 'childAmount' in resultDICT):
         #     departure = resultDICT['departure']
         #     destination = resultDICT['destination']
@@ -286,7 +288,6 @@ def ticketTime(message):
         #                 childrenPrice = 0
         #             totalPrice = adultPrice*adultAmount + childrenPrice*childrenAmount
         #     return "您所搭的高鐵票價是：{}，最近的班次時間是 {}".format(totalPrice, response[0])
-        return "以下是您指定時間可搭乘最接近的班次時間: {}".format(response[0])
 
 def ticketPrice(message):
     # curl = "curl"
