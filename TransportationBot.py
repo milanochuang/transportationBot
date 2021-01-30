@@ -233,42 +233,62 @@ def loadJson(filename):
         result = json.load(f)
     return result
 
+def varExist(var):
+    try:
+        var
+    except NameError:
+        var = False
+        print("你打的站名可能不存在喔！")
+    else:
+        var = True
+
 def ticketTime(message):
-    curl = "curl"
-    if CURL_PATH != "":
-        curl = CURL_PATH
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure']
-    train_date = dt.now().strftime('%Y-%m-%d')
     destination = resultDICT['destination']
     time = resultDICT['time']
     dtMessageTime = dt.strptime(time, "%H:%M")
     destination = resultDICT['destination']
-    result = loadJson("THRS_timetable.json")
-    response=list()
-    DepartureTime = list()
-    print(resultDICT)
-    for train in result:
-        for stop in train['GeneralTimetable']["StopTimes"]:
-            if('DepartureTime' in stop):
-                dtScheduleTime = dt.strptime(stop['DepartureTime'], "%H:%M")
-                time_str = dt.strftime(dtScheduleTime, "%H:%M")
-                DepartureTime.append(time_str)
-                if(departure == stop["StationName"]["Zh_tw"]):
-                    DepartureSeq = stop['StopSequence']
-                if(destination == stop["StationName"]["Zh_tw"]):
-                    DestinationSeq = stop['StopSequence']
-                for time in DepartureTime:
-                    dtDepartureTime = dt.strptime(time, "%H:%M")
-                    if(dtMessageTime < dtDepartureTime):
-                        response.append(time)
-                            # continue
-                """
-                要確認目的地的StopSequence要比出發地的大再回傳departure的DepartureTime
-                """
-    response.sort()
-    return "以下是您指定時間可搭乘最接近的班次時間: {}".format(response[0])
+    timeTable = loadJson("THRS_timetable.json")
+    departureTimeList=list()
+    arrivalTimeList=list()
+    for station in stationDICT:
+        if departure == station['stationName']:
+            departureSeq = station['stationSeq']
+        if destination == station['stationName']:
+            destinationSeq = station['stationSeq']
+    if departureSeq < destinationSeq: #判斷北上還是南下 若departureSeq < destinationSeq 則南下 反之則北上 （要記得處理等於的情形）
+        direction = 0
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #確認json檔內的車次是南下還是北上
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime > dtMessageTime:
+                                departureTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(departureTime) 
+                        # if destination == trainStop['StationName']['Zh_tw']:
+                        #     if 'ArrivalTime' in trainStop:
+                        #         dtArrivalTime = dt.strptime(trainStop['ArrivalTime'], "%H:%M")
+                        #         if dtArrivalTime > dtDepartureTime:
+                        #             arrivalTime = dt.strftime(dtArrivalTime, "%H:%M")
+                        #             arrivalTimeList.append(arrivalTime)
+    if departureSeq > destinationSeq:
+        direction = 1
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #確認json檔內的車次是南下還是北上 
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime > dtMessageTime:
+                                resultTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(resultTime)                            
+    departureTimeList.sort()
+    arrivalTimeList.sort()
+    return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
 
         # if ('adultAmount' in resultDICT or 'childAmount' in resultDICT):
         #     departure = resultDICT['departure']
@@ -308,6 +328,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('7:51台北到台南的票一張'))
+    print(ticketTime('18:14桃園到台南的票一張 '))
     # print(ticketPrice('五大三小'))
     
