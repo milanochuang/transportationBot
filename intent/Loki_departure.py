@@ -16,6 +16,8 @@
 
 DEBUG_departure = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
+from datetime import datetime
+dt = datetime.now()
 
 # 將符合句型的參數列表印出。這是 debug 或是開發用的。
 def debugInfo(inputSTR, utterance):
@@ -52,6 +54,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "[新竹]往台北":
         # write your code here
         resultDICT['departure'] = args[0]
+        resultDICT['time'] = dt.strftime('%H:%M')
         pass
     if utterance == "[新竹]到台北":
         resultDICT['departure'] = args[0]

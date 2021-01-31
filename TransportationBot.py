@@ -247,9 +247,11 @@ def ticketTime(message):
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure']
     destination = resultDICT['destination']
-    time = resultDICT['time']
+    if 'time' in resultDICT:
+        time = resultDICT['time']
+    else:
+        time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M")
-    destination = resultDICT['destination']
     timeTable = loadJson("THRS_timetable.json")
     departureTimeList=list()
     arrivalTimeList=list()
@@ -328,6 +330,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('18:14桃園到台南的票一張 '))
+    print(ticketTime('五大三小台北到台南'))
     # print(ticketPrice('五大三小'))
     
