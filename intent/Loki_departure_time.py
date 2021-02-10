@@ -45,7 +45,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # resultDICT['minute'] = args[1]
         resultDICT['adultAmount'] = numberSTRConvert(args[2][0])[args[2][0]]
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[0]+":"+args[1]
+        resultDICT['departure_time'] = args[0]+":"+args[1]
         pass
 
     if utterance == "[9]:[30]出發的票[一張]":
@@ -54,7 +54,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # resultDICT['minute'] = args[1]
         # resultDICT['ticketAmount'] = args[2][0]
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[0]+":"+args[1]
+        resultDICT['departure_time'] = args[0]+":"+args[1]
         resultDICT['destination'] = "左營"
         resultDICT['departure'] = "台北"
         pass
@@ -66,7 +66,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # resultDICT['minute'] = time[0][0]["time_span"]["minute"][0]
         resultDICT['ticketAmount'] = args[2][0]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10] #抓articutAPI中time的日期（前十格）
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3] #抓articutAPI中time的時間（後八格）
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3] #抓articutAPI中time的時間（後八格）
         pass
 
     if utterance == "[九點][半]出發的票":
@@ -77,7 +77,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['ticketAmount'] = 1
         datetime = amountSTRConvert(args[0]+args[1])["time"]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         resultDICT['departure'] = "台北"
         resultDICT['destination'] = "左營"
         pass
@@ -85,7 +85,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "我要[一張][7]:[46]到台南的票":
         # write your code here
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[1]+":"+args[2]
+        resultDICT['departure_time'] = args[1]+":"+args[2]
         #resultDICT['ticketAmount'] = amountSTRConvert(args[0][0])
         resultDICT['departure'] = "台北"
         pass
@@ -93,7 +93,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "我要[一張][9]:[30]出發的票":
         # write your code here
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
-        resultDICT['time'] = args[1]+":"+args[2]
+        resultDICT['departure_time'] = args[1]+":"+args[2]
         # resultDICT['ticketAmount'] = args[0][0]
         resultDICT['destination'] = "左營"
         pass
@@ -102,7 +102,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # write your code here
         datetime = amountSTRConvert(args[1]+args[2])["time"]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         resultDICT['ticketAmount'] = args[0][0]
         resultDICT['departure'] = "台北"
         pass
@@ -111,7 +111,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # write your code here
         datetime = amountSTRConvert(args[1]+args[2])["time"]
         resultDICT['date'] = datetime[0][0]["datetime"][0:10]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         resultDICT['ticketAmount'] = args[0][0]
         resultDICT['destination'] = "左營"
         resultDICT['departure'] = "台北"
@@ -119,13 +119,13 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "[三十分]出發的高鐵":   #利用判斷是確認時分
         hour = dt.strftime("%H")
         minute = numberSTRConvert(args[0][0:2])[args[0][0:2]]
-        resultDICT['time'] = "{}:{}".format(hour, minute)
+        resultDICT['departure_time'] = "{}:{}".format(hour, minute)
         resultDICT['date'] = dt.strftime('%Y-%m-%d')
         resultDICT['departure'] = "台北"
         resultDICT['destination'] = "左營"
         pass
     if utterance == "[八點左右]":
         datetime = amountSTRConvert(args[0][0:2])["time"]
-        resultDICT['time'] = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         pass
     return resultDICT

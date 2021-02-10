@@ -9,13 +9,7 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from line_sdk import Linebot
-from TransportationBot import ticketTime, ticketPrice
-from intent import Loki_departure_time
-from intent import Loki_destination_time
-from intent import Loki_destination
-from intent import Loki_departure
-from intent import Loki_Children
-from intent import Loki_Adult
+from TransportationBot import ticket
 LINE_ACCESS_TOKEN   = ""
 LINE_CHANNEL_SECRET = ""
 

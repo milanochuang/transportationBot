@@ -233,22 +233,15 @@ def loadJson(filename):
         result = json.load(f)
     return result
 
-def varExist(var):
-    try:
-        var
-    except NameError:
-        var = False
-        print("你打的站名可能不存在喔！")
-    else:
-        var = True
-
-def ticketTime(message):
+def ticket(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure']
     destination = resultDICT['destination']
-    if 'time' in resultDICT:
-        time = resultDICT['time']
+    if 'departure_time' in resultDICT:
+        time = resultDICT['departure_time']
+    elif 'destination_time' in resultDICT:
+        time = resultDICT['destination_time'] #須確認「抵達時間前的高鐵」邏輯
     else:
         time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M")
@@ -289,7 +282,7 @@ def ticketTime(message):
                                 resultTime = dt.strftime(dtDepartureTime, "%H:%M")
                                 departureTimeList.append(resultTime)                            
     departureTimeList.sort()
-    arrivalTimeList.sort()
+    print(resultDICT)
     return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
 
         # if ('adultAmount' in resultDICT or 'childAmount' in resultDICT):
@@ -330,6 +323,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('五大三小台北到台南'))
+    print(ticket('台北到台南的票一張'))
     # print(ticketPrice('五大三小'))
     

@@ -59,4 +59,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "[新竹]到台北":
         resultDICT['departure'] = args[0]
         pass
+    if utterance == "從[台北]":
+        resultDICT['departure'] = args[0]
+        pass
     return resultDICT
