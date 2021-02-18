@@ -233,7 +233,7 @@ def loadJson(filename):
         result = json.load(f)
     return result
 
-def ticket(message):
+def ticketTime(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure']
@@ -247,7 +247,6 @@ def ticket(message):
     dtMessageTime = dt.strptime(time, "%H:%M")
     timeTable = loadJson("THRS_timetable.json")
     departureTimeList=list()
-    arrivalTimeList=list()
     for station in stationDICT:
         if departure == station['stationName']:
             departureSeq = station['stationSeq']
@@ -264,12 +263,6 @@ def ticket(message):
                             if dtDepartureTime > dtMessageTime:
                                 departureTime = dt.strftime(dtDepartureTime, "%H:%M")
                                 departureTimeList.append(departureTime) 
-                        # if destination == trainStop['StationName']['Zh_tw']:
-                        #     if 'ArrivalTime' in trainStop:
-                        #         dtArrivalTime = dt.strptime(trainStop['ArrivalTime'], "%H:%M")
-                        #         if dtArrivalTime > dtDepartureTime:
-                        #             arrivalTime = dt.strftime(dtArrivalTime, "%H:%M")
-                        #             arrivalTimeList.append(arrivalTime)
     if departureSeq > destinationSeq:
         direction = 1
         for trainSchedule in timeTable:
@@ -284,37 +277,28 @@ def ticket(message):
     departureTimeList.sort()
     print(resultDICT)
     return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-
-        # if ('adultAmount' in resultDICT or 'childAmount' in resultDICT):
-        #     departure = resultDICT['departure']
-        #     destination = resultDICT['destination']
-        #     priceList = loadJson('THRS_ticketPrice.json')
-        #     for price in priceList:
-        #         if(departure == price['OriginStationName']['Zh_tw'] and destination == price['DestinationStationName']['Zh_tw']):
-        #             if('adultAmount' in resultDICT):
-        #                 adultAmount = int(resultDICT['adultAmount'])
-        #                 adultPrice = price['Fares'][3]['Price']
-        #             else:
-        #                 adultPrice = 0
-        #             if('childrenAmount' in resultDICT):
-        #                 childrenAmount = int(resultDICT['childrenAmount'])
-        #                 childrenPrice = 0.5*price['Fares'][2]['Price']
-        #             else:
-        #                 childrenPrice = 0
-        #             totalPrice = adultPrice*adultAmount + childrenPrice*childrenAmount
-        #     return "您所搭的高鐵票價是：{}，最近的班次時間是 {}".format(totalPrice, response[0])
-
 def ticketPrice(message):
-    # curl = "curl"
-    # if CURL_PATH != "":
-    #     curl = CURL_PATH
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
-    adultAmount = int(resultDICT['adultAmount'])
-    childrenAmount = int(resultDICT['childrenAmount'])
-    totalPrice = 1490*adultAmount + 745*childrenAmount
-    return "從台北到左營的票價為{}元".format(totalPrice)
-
+    departure = resultDICT['departure']
+    destination = resultDICT['destination']
+    if 'adultAmount' in resultDICT:
+        adultAmount = resultDICT['adultAmount']
+    else:
+        adultAmount = 0
+    if 'childrenAmount' in resultDICT:
+        childrenAmount = resultDICT['childrenAmount']
+    else:
+        childrenAmount = 0
+    priceInfo = loadJson('THRS_ticketPrice.json')
+    for i in priceInfo:
+        if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
+            for fareType in i['Fares']:
+                if fareType['TicketType'] == "標準":
+                    adultPrice = fareType['Price']
+                    childrenPrice = 0.5*adultPrice
+    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
 if __name__ == "__main__":
     # inputLIST = ["七點四十六分台北到台南的票一張"]
     # resultDICT = runLoki(inputLIST)
@@ -323,6 +307,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticket('台北到台南的票一張'))
+    print(ticketTime('台北到桃園一個小孩'))
     # print(ticketPrice('五大三小'))
     

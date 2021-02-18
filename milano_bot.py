@@ -2,8 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import discord
-from TransportationBot import ticket, runLoki
-
+from TransportationBot import runLoki
+import json
 
 DISCORD_TOKEN=""
 DISCORD_GUILD="Droidtown Linguistics Tech."
@@ -13,6 +13,99 @@ BOT_NAME = "幫你買票機器人"
 # https://discordpy.readthedocs.io/en/latest/api.html#client
 
 client = discord.Client()
+
+stationDICT=[
+            {'stationName': '南港', 'stationID': '0990', 'stationSeq': 1},
+            {'stationName': '台北', 'stationID': '1000', 'stationSeq': 2},
+            {'stationName': '板橋', 'stationID': '1010', 'stationSeq': 3},
+            {'stationName': '桃園', 'stationID': '1020', 'stationSeq': 4},
+            {'stationName': '新竹', 'stationID': '1030', 'stationSeq': 5},
+            {'stationName': '苗栗', 'stationID': '1035', 'stationSeq': 6},
+            {'stationName': '台中', 'stationID': '1040', 'stationSeq': 7},
+            {'stationName': '彰化', 'stationID': '1043', 'stationSeq': 8},
+            {'stationName': '雲林', 'stationID': '1047', 'stationSeq': 9},
+            {'stationName': '嘉義', 'stationID': '1050', 'stationSeq': 10},
+            {'stationName': '台南', 'stationID': '1060', 'stationSeq': 11},
+            {'stationName': '左營', 'stationID': '1070', 'stationSeq': 12},
+            ]
+
+def amountSTRConvert(inputSTR):
+    resultDICT={}
+    resultDICT = articut.parse(inputSTR, level="lv3")
+    return resultDICT['number']
+
+def loadJson(filename):
+    with open(filename,"r") as f:
+        result = json.load(f)
+    return result
+
+def ticketTime(message):
+    inputLIST = [message]
+    resultDICT = runLoki(inputLIST)
+    departure = resultDICT['departure']
+    destination = resultDICT['destination']
+    if 'departure_time' in resultDICT:
+        time = resultDICT['departure_time']
+    elif 'destination_time' in resultDICT:
+        time = resultDICT['destination_time'] #須確認「抵達時間前的高鐵」邏輯
+    else:
+        time = dt.now().strftime('%H:%M')
+    dtMessageTime = dt.strptime(time, "%H:%M")
+    timeTable = loadJson("THRS_timetable.json")
+    departureTimeList=list()
+    for station in stationDICT:
+        if departure == station['stationName']:
+            departureSeq = station['stationSeq']
+        if destination == station['stationName']:
+            destinationSeq = station['stationSeq']
+    if departureSeq < destinationSeq: #判斷北上還是南下 若departureSeq < destinationSeq 則南下 反之則北上 （要記得處理等於的情形）
+        direction = 0
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #確認json檔內的車次是南下還是北上
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime > dtMessageTime:
+                                departureTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(departureTime) 
+    if departureSeq > destinationSeq:
+        direction = 1
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #確認json檔內的車次是南下還是北上 
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime > dtMessageTime:
+                                resultTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(resultTime)                            
+    departureTimeList.sort()
+    print(resultDICT)
+    return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
+
+def ticketPrice(message):
+    inputLIST = [message]
+    resultDICT = runLoki(inputLIST)
+    departure = resultDICT['departure']
+    destination = resultDICT['destination']
+    if 'adultAmount' in resultDICT:
+        adultAmount = resultDICT['adultAmount']
+    else:
+        adultAmount = 0
+    if 'childrenAmount' in resultDICT:
+        childrenAmount = resultDICT['childrenAmount']
+    else:
+        childrenAmount = 0
+    priceInfo = loadJson('THRS_ticketPrice.json')
+    for i in priceInfo:
+        if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
+            for fareType in i['Fares']:
+                if fareType['TicketType'] == "標準":
+                    adultPrice = fareType['Price']
+                    childrenPrice = 0.5*adultPrice
+    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
 
 @client.event
 async def on_ready():
@@ -29,50 +122,70 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-
     print("message.content", message.content)
-
     if "<@!{}>".format(client.user.id) in message.content:
-        if '買票' in message.content:
-            response = "還不能買票啦！我還沒那麼厲害，但或許你可以問我時刻表跟票價喔！"
+        paxDICT = {}
+        if '出來' in message.content:
+            response = "請輸入代碼選擇服務項目(1:查詢時間/2:查詢票價)"
+            await message.channel.send(response)
+        if '謝謝' in message.content:
+            response = "期待下次再幫你忙喔！"
             await message.channel.send(response)
         else:
-            inputSTR = message.content.replace("<@!{}> ".format(clinet.user.id), "")
-            inputLIST = [inputSTR]
-            resultDICT = runLoki(inputLIST)
-            paxDICT = {}
-                    #       "ID": 
-                    #           {
-                    #               "time": {"departure time": "", "destination time": ""}, 
-                    #               "station": {"departure": "", "destination": ""},
-                    #               "adultAmount": "", 
-                    #               "childrenAmount": ""
-                    #           }
-                    #   }
-            if str(message.author.id) not in paxDICT:
-                paxDICT[str(message.author.id)] = {
-                    "time": ["departure_time": "", "destination_time": ""], 
-                    "station": ["departure": "", "destination": ""],
-                    "adultAmount": "", 
-                    "childrenAmount": ""
-                }
-            if 'departure_time' in resultDICT:
-                paxDICT[str(message.author.id)]['time']['departure_time'] = resultDICT['departure_time']
-            if 'destination_time' in resultDICT:
-                paxDICT[str(message.author.id)]['time']['destination_time'] = resultDICT['destination_time']
-            if 'departure' in resultDICT:
-                paxDICT[str(message.author.id)]['station']['departure'] = resultDICT['departure']
-            if 'destination' in resultDICT:
-                paxDICT[str(message.author.id)]['station']['destination'] = resultDICT['destination']
-            if 'adultAmount' in resultDICT:
-                paxDICT[str(message.author.id)]['adultAmount'] = resultDICT['adultAmount']
-            if 'childrenAmount' in resultDICT:
-                paxDICT[str(message.author.id)]['childrenDICT'] = resultDICT['childrenAmount']
-            if paxDICT[str(message.author.id)]['time']['departure_time'] == "":
-                await message.channel.response("你沒有打時間啊！想知道幾點以前到請打時間")
-            if paxDICT[str(message.author.id)]['station']
-            response = ticket(message.content)
-            await message.channel.send(response)
+            if "1" in message.content:
+                await message.channel.send("請告訴我您什麼時候要從哪裡出發到哪裡呢？")
+            if "2" in message.content:
+                await message.channel.send("請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩呢？")
+            else:
+                inputSTR = message.content.replace("<@!{}> ".format(client.user.id), "")
+                inputLIST = [inputSTR]
+                resultDICT = runLoki(inputLIST)
+                if ('adultAmount1' or 'childrenAmount' in resultDICT) and (resultDICT['adultAmount']!=0 or resultDICT['childrenAmount']!=0): #2
+                    if str(message.author.id) not in paxDICT:
+                        paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
+                    if 'departure' in resultDICT:
+                        paxDICT[str(message.author.id)]['station']['departure'] = resultDICT['departure']
+                    if 'destination' in resultDICT:
+                        paxDICT[str(message.author.id)]['station']['destination'] = resultDICT['destination']
+                    if 'adultAmount' in resultDICT:
+                        paxDICT[str(message.author.id)]['adultAmount'] = resultDICT['adultAmount']
+                    if 'childrenAmount' in resultDICT:
+                        paxDICT[str(message.author.id)]['childrenAmount'] = resultDICT['childrenAmount']
+                    if paxDICT[str(message.author.id)]['station']['departure'] == "":
+                        await message.channel.send("要記得說你從哪出發喔！")
+                        return
+                    if paxDICT[str(message.author.id)]['station']['destination'] == "":
+                        await message.channel.send("要記得說你要去哪裡喔！")
+                        return
+                    if paxDICT[str(message.author.id)]['adultAmount'] == 0 and paxDICT[str(message.author.id)]['childrenAmount'] == 0:
+                        await message.channel.send("有幾位大人幾位小孩要記得說喔！")
+                        return
+                    await message.channel.send(ticketPrice(inputSTR))
+                    del paxDICT[str(message.author.id)]
+                else: #1
+                    if str(message.author.id) not in paxDICT:
+                        paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
+                    if 'departure_time' in resultDICT:
+                        paxDICT[str(message.author.id)]['departure_time'] = resultDICT['departure_time']
+                    if 'departure' in resultDICT:
+                        paxDICT[str(message.author.id)]['station']['departure'] = resultDICT['departure']
+                    if 'destination' in resultDICT:
+                        paxDICT[str(message.author.id)]['station']['destination'] = resultDICT['destination']
+                    if 'adultAmount' in resultDICT:
+                        paxDICT[str(message.author.id)]['adultAmount'] = resultDICT['adultAmount']
+                    if 'childrenAmount' in resultDICT:
+                        paxDICT[str(message.author.id)]['childrenAmount'] = resultDICT['childrenAmount']
+                    if paxDICT[str(message.author.id)]['departure_time'] == "":
+                        await message.channel.send("要記得加入你的出發時間喔！")
+                        return
+                    if paxDICT[str(message.author.id)]['station']['departure'] == "":
+                        await message.channel.send("要記得說你從哪出發喔！")
+                        return
+                    if paxDICT[str(message.author.id)]['station']['destination'] == "":
+                        await message.channel.send("要記得說你要去哪裡喔！")
+                        return
+                    await message.channel.send(ticketTime(inputSTR))
+                    del paxDICT[str(message.author.id)]
     elif "bot 點名" in message.content:
         response = "有！"
         await message.channel.send(response)

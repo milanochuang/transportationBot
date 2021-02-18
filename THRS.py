@@ -90,6 +90,11 @@ def getTimeTable():
     resultDICT = getCurl(curl, timetableUrl)
     return resultDICT
 
+def getPriceInfo():
+    priceInfoUrl = "https://ptx.transportdata.tw/MOTC/v2/Rail/THSR/ODFare?$format=JSON"
+    resultDICT = getCurl(curl, priceInfoUrl)
+    return resultDICT
+
 if __name__ == "__main__":
     # curl 路徑
     curl = "curl"
@@ -128,9 +133,10 @@ if __name__ == "__main__":
     #     result = getTrainTimeTable()
     #     json.dump(result, f, ensure_ascii = False)
 
-    with open("THRS_ticketPrice.json", "w", encoding = "utf-8") as f:
-        result = getTrainTicketPrice()
-        json.dump(result, f, ensure_ascii = False)
-    with open("THRS_timetable.json", "w", encoding = "utf-8") as f:
-        result = getTimeTable()
-        json.dump(result, f, ensure_ascii = False)
+    # with open("THRS_ticketPrice.json", "w", encoding = "utf-8") as f:
+    #     result = getTrainTicketPrice()
+    #     json.dump(result, f, ensure_ascii = False)
+    # with open("THRS_timetable.json", "w", encoding = "utf-8") as f:
+    #     result = getTimeTable()
+    #     json.dump(result, f, ensure_ascii = False)
+    

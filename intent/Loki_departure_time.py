@@ -128,4 +128,9 @@ def getResult(inputSTR, utterance, args, resultDICT):
         datetime = amountSTRConvert(args[0][0:2])["time"]
         resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         pass
+    if utterance == "[八點][三十分]出發的高鐵":
+        datetime = amountSTRConvert(args[0]+args[1])["time"]
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure'] = "台北"
+        resultDICT['destination'] = "左營"
     return resultDICT

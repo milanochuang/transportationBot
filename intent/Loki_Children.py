@@ -48,7 +48,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "[三個]小孩":
         # write your code here
-        resultDICT['childrenAmount'] = amountSTRConvert(args[0][0])[args[1][0]]
+        resultDICT['childrenAmount'] = amountSTRConvert(args[0][0])[args[0][0]]
         pass
 
     if utterance == "[三個]小孩[兩個]大人":
