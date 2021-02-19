@@ -66,7 +66,7 @@ except:
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = ""
+LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -307,6 +307,6 @@ if __name__ == "__main__":
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('台北到桃園一個小孩'))
+    print(ticketTime('我要一張9:54從台北到台南的票'))
     # print(ticketPrice('五大三小'))
     

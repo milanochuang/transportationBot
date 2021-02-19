@@ -3,9 +3,12 @@
 
 import discord
 from TransportationBot import runLoki
+import time
+import datetime
 import json
+dt = datetime.datetime
 
-DISCORD_TOKEN=""
+DISCORD_TOKEN="Nzg5Mzc0ODk3OTA5Mzk5NjA1.X9xIqQ.v2eeaRGiXWEfdd5MxhaMfJ-02oI"
 DISCORD_GUILD="Droidtown Linguistics Tech."
 BOT_NAME = "幫你買票機器人"
 
@@ -128,14 +131,18 @@ async def on_message(message):
         if '出來' in message.content:
             response = "請輸入代碼選擇服務項目(1:查詢時間/2:查詢票價)"
             await message.channel.send(response)
+            return
         if '謝謝' in message.content:
             response = "期待下次再幫你忙喔！"
             await message.channel.send(response)
+            return
         else:
             if "1" in message.content:
                 await message.channel.send("請告訴我您什麼時候要從哪裡出發到哪裡呢？")
+                return
             if "2" in message.content:
                 await message.channel.send("請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩呢？")
+                return
             else:
                 inputSTR = message.content.replace("<@!{}> ".format(client.user.id), "")
                 inputLIST = [inputSTR]
