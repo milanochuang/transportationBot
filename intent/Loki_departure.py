@@ -54,7 +54,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
     if utterance == "[新竹]往台北":
         # write your code here
         resultDICT['departure'] = args[0]
-        resultDICT['time'] = dt.strftime('%H:%M')
+        resultDICT['departure_time'] = dt.strftime('%H:%M')
         pass
     if utterance == "[新竹]到台北":
         resultDICT['departure'] = args[0]

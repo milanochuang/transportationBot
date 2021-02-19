@@ -5,7 +5,7 @@ import discord
 from TransportationBot import runLoki
 import json
 
-DISCORD_TOKEN=""
+DISCORD_TOKEN="Nzg5Mzc0ODk3OTA5Mzk5NjA1.X9xIqQ.nz80BzVlbyUTBm-2hVxfuRCnOTI"
 DISCORD_GUILD="Droidtown Linguistics Tech."
 BOT_NAME = "幫你買票機器人"
 
@@ -140,7 +140,7 @@ async def on_message(message):
                 inputSTR = message.content.replace("<@!{}> ".format(client.user.id), "")
                 inputLIST = [inputSTR]
                 resultDICT = runLoki(inputLIST)
-                if ('adultAmount1' or 'childrenAmount' in resultDICT) and (resultDICT['adultAmount']!=0 or resultDICT['childrenAmount']!=0): #2
+                if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: #2
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
                     if 'departure' in resultDICT:
@@ -152,7 +152,7 @@ async def on_message(message):
                     if 'childrenAmount' in resultDICT:
                         paxDICT[str(message.author.id)]['childrenAmount'] = resultDICT['childrenAmount']
                     if paxDICT[str(message.author.id)]['station']['departure'] == "":
-                        await message.channel.send("要記得說你從哪出發喔！")
+                        await message.channel.send("要記得說你從哪出發，還有要去哪裡喔！")
                         return
                     if paxDICT[str(message.author.id)]['station']['destination'] == "":
                         await message.channel.send("要記得說你要去哪裡喔！")
@@ -163,6 +163,7 @@ async def on_message(message):
                     await message.channel.send(ticketPrice(inputSTR))
                     del paxDICT[str(message.author.id)]
                 else: #1
+                    print(resultDICT)
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                     if 'departure_time' in resultDICT:
@@ -171,15 +172,11 @@ async def on_message(message):
                         paxDICT[str(message.author.id)]['station']['departure'] = resultDICT['departure']
                     if 'destination' in resultDICT:
                         paxDICT[str(message.author.id)]['station']['destination'] = resultDICT['destination']
-                    if 'adultAmount' in resultDICT:
-                        paxDICT[str(message.author.id)]['adultAmount'] = resultDICT['adultAmount']
-                    if 'childrenAmount' in resultDICT:
-                        paxDICT[str(message.author.id)]['childrenAmount'] = resultDICT['childrenAmount']
                     if paxDICT[str(message.author.id)]['departure_time'] == "":
                         await message.channel.send("要記得加入你的出發時間喔！")
                         return
                     if paxDICT[str(message.author.id)]['station']['departure'] == "":
-                        await message.channel.send("要記得說你從哪出發喔！")
+                        await message.channel.send("要記得說你從哪出發，還有要去哪裡喔！")
                         return
                     if paxDICT[str(message.author.id)]['station']['destination'] == "":
                         await message.channel.send("要記得說你要去哪裡喔！")
