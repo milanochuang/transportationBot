@@ -1,4 +1,4 @@
-stationDICT=[
+stationLIST=[
             {'stationName': '南港', 'stationID': '0990', 'stationSeq': 1},
             {'stationName': '台北', 'stationID': '1000', 'stationSeq': 2},
             {'stationName': '板橋', 'stationID': '1010', 'stationSeq': 3},
@@ -10,5 +10,6 @@ stationDICT=[
             {'stationName': '雲林', 'stationID': '1047', 'stationSeq': 9},
             {'stationName': '嘉義', 'stationID': '1050', 'stationSeq': 10},
             {'stationName': '台南', 'stationID': '1060', 'stationSeq': 11},
-            {'stationName': '左營', 'stationID': '1070', 'stationSeq': 12},
+            {'stationName': ['左營', '高雄'], 'stationID': '1070', 'stationSeq': 12},
             ]
+callList = ['出來', '你好']

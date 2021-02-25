@@ -56,5 +56,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # write your code here
         resultDICT['adultAmount'] = amountSTRConvert(args[1][0])[args[1][0]]
         pass
-
+    if utterance == "有[兩張]成人票":
+        resultDICT['adultAmount'] = amountSTRConvert(args[0][0])[args[0][0]]
+        pass
     return resultDICT

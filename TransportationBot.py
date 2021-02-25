@@ -47,6 +47,7 @@ import time
 import datetime
 import json
 dt = datetime.datetime
+from ref_data import stationLIST
 
 try:
     from intent import Loki_departure_time
@@ -66,7 +67,7 @@ except:
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = ""
+LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -213,21 +214,6 @@ def amountSTRConvert(inputSTR):
     resultDICT = articut.parse(inputSTR, level="lv3")
     return resultDICT['number']
 
-stationDICT=[
-            {'stationName': '南港', 'stationID': '0990', 'stationSeq': 1},
-            {'stationName': '台北', 'stationID': '1000', 'stationSeq': 2},
-            {'stationName': '板橋', 'stationID': '1010', 'stationSeq': 3},
-            {'stationName': '桃園', 'stationID': '1020', 'stationSeq': 4},
-            {'stationName': '新竹', 'stationID': '1030', 'stationSeq': 5},
-            {'stationName': '苗栗', 'stationID': '1035', 'stationSeq': 6},
-            {'stationName': '台中', 'stationID': '1040', 'stationSeq': 7},
-            {'stationName': '彰化', 'stationID': '1043', 'stationSeq': 8},
-            {'stationName': '雲林', 'stationID': '1047', 'stationSeq': 9},
-            {'stationName': '嘉義', 'stationID': '1050', 'stationSeq': 10},
-            {'stationName': '台南', 'stationID': '1060', 'stationSeq': 11},
-            {'stationName': '左營', 'stationID': '1070', 'stationSeq': 12},
-            ]
-
 def loadJson(filename):
     with open(filename,"r") as f:
         result = json.load(f)
@@ -247,11 +233,12 @@ def ticketTime(message):
     dtMessageTime = dt.strptime(time, "%H:%M")
     timeTable = loadJson("THRS_timetable.json")
     departureTimeList=list()
-    for station in stationDICT:
+    for station in stationLIST:
         if departure == station['stationName']:
             departureSeq = station['stationSeq']
         if destination == station['stationName']:
             destinationSeq = station['stationSeq']
+    print(destination)
     if departureSeq < destinationSeq: #判斷北上還是南下 若departureSeq < destinationSeq 則南下 反之則北上 （要記得處理等於的情形）
         direction = 0
         for trainSchedule in timeTable:
@@ -277,7 +264,7 @@ def ticketTime(message):
     departureTimeList.sort()
     print(resultDICT)
     return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-def ticketPrice(message):
+def ticketPriceStandard(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure']
@@ -300,13 +287,14 @@ def ticketPrice(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
 if __name__ == "__main__":
-    # inputLIST = ["七點四十六分台北到台南的票一張"]
-    # resultDICT = runLoki(inputLIST)
+    inputLIST = ["下午五點半台北到左營"]
+    resultDICT = runLoki(inputLIST)
+    print(resultDICT)
     # time = amountSTRConvert(resultDICT['time'])
     # print(time)
     # print("Result => {}".format(resultDICT))
     # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
     # print(result)
-    print(ticketTime('我要一張9:54從台北到台南的票'))
-    # print(ticketPrice('五大三小'))
+    # print(ticketTime('早上五點半台北到左營'))
+    # print(ticketPrice('5個小孩台北到桃園'))
     
