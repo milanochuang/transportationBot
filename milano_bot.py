@@ -9,7 +9,7 @@ from ref_data import callList
 from TransportationBot import runLoki
 import time
 
-DISCORD_TOKEN="Nzg5Mzc0ODk3OTA5Mzk5NjA1.X9xIqQ.8bFTrpj95GZXdUHJQze1aY1b7tI"
+DISCORD_TOKEN=""
 DISCORD_GUILD="Droidtown Linguistics Tech."
 BOT_NAME = "幫你買票機器人"
 
