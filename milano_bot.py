@@ -5,7 +5,7 @@ import discord
 import datetime
 dt = datetime.datetime
 import json
-from ref_data import callList
+from ref_data import stationLIST
 from TransportationBot import runLoki
 import time
 
@@ -17,9 +17,6 @@ BOT_NAME = "幫你買票機器人"
 # https://discordpy.readthedocs.io/en/latest/api.html#client
 
 client = discord.Client()
-
-priceInfo = loadJson('THRS_ticketPrice.json') #DICT
-timeTable = loadJson("THRS_timetable.json") #DICT
 
 def amountSTRConvert(inputSTR): #將國字轉換成數字
     resultDICT={}
@@ -44,7 +41,8 @@ def ticketTime(message): #
         time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
     departureTimeList=list()
-    for station in stationDICT:
+    timeTable = loadJson("THRS_timetable.json") #DICT
+    for station in stationLIST:
         if departure == station['stationName']:
             departureSeq = station['stationSeq'] #Normally departureSequence & destinationSeq will be object of integer
         if destination == station['stationName']:
@@ -90,6 +88,7 @@ def ticketPrice(message):
         childrenAmount = resultDICT['childrenAmount']
     else:
         childrenAmount = 0
+    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
@@ -113,6 +112,7 @@ def ticketPriceBusiness(message):
         childrenAmount = resultDICT['childrenAmount']
     else:
         childrenAmount = 0
+    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
@@ -136,6 +136,7 @@ def ticketPriceFree(message):
         childrenAmount = resultDICT['childrenAmount']
     else:
         childrenAmount = 0
+    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
@@ -164,11 +165,11 @@ async def on_message(message):
     print("message.content", message.content)
     if "<@!{}>".format(client.user.id) in message.content:
         paxDICT = {}
-        if message.content in callList:
-            response = "<@!{}>".format(message.author.id) + "若想「查詢票價」，請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩?\n若您有特殊需求，請在輸入時註明「商務」或「自由」，謝謝。\n若想「查詢班次」，請告訴我您什麼時候要從哪裡出發到哪裡?"
+        if "出來" in message.content:
+            response = "<@!{}>".format(message.author.id) + "\n若想「查詢票價」，請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩?\n若您有特殊需求，請在輸入時註明「商務」或「自由」，謝謝。\n若想「查詢班次」，請告訴我您什麼時候要從哪裡出發到哪裡?"
             await message.channel.send(response)
             return
-        if '謝謝' in message.content:
+        if message.content == "謝謝":
             response = "<@!{}>".format(message.author.id) + "期待下次再幫你忙喔！"
             await message.channel.send(response)
             return
@@ -200,6 +201,10 @@ async def on_message(message):
                         response = "<@!{}>".format(message.author.id) + "有幾位大人幾位小孩要記得說喔！"
                         await message.channel.send(response)
                         return
+                    if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
+                        response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
+                        await message.channel.send(response)
+                        return
                     await message.channel.send(ticketPriceBusiness(inputSTR))
                     del paxDICT[str(message.author.id)]
                 if '自由' in message.content:
@@ -223,6 +228,10 @@ async def on_message(message):
                         return
                     if paxDICT[str(message.author.id)]['adultAmount'] == 0 and paxDICT[str(message.author.id)]['childrenAmount'] == 0:
                         response = "<@!{}>".format(message.author.id) + "有幾位大人幾位小孩要記得說喔！"
+                        await message.channel.send(response)
+                        return
+                    if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
+                        response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
                         await message.channel.send(response)
                         return
                     await message.channel.send(ticketPriceFree(inputSTR))
@@ -250,9 +259,13 @@ async def on_message(message):
                         response = "<@!{}>".format(message.author.id) + "有幾位大人幾位小孩要記得說喔！"
                         await message.channel.send(response)
                         return
+                    if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
+                        response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
+                        await message.channel.send(response)
+                        return
                     await message.channel.send(ticketPrice(inputSTR))
                     del paxDICT[str(message.author.id)]
-            elif 'departure_time' in resultDICT #1
+            else: #1
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -273,11 +286,9 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + "要記得說你要去哪裡喔！"
                     await message.channel.send(response)
                     return
-                await message.channel.send(ticketTimeStandard(inputSTR))
+                print(resultDICT)
+                await message.channel.send(ticketTime(inputSTR))
                 del paxDICT[str(message.author.id)]
-            else:
-                response = "你在說什麼我幫不到你喔！"
-                await message.,channel.send(response)
     elif "bot 點名" in message.content:
         response = "有！"
         await message.channel.send(response)
