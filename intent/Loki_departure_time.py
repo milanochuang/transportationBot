@@ -82,7 +82,11 @@ def getResult(inputSTR, utterance, args, resultDICT):
         datetime = amountSTRConvert(args[1]+args[2])["time"]
         resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         pass
-
+    if utterance == "[五十分]到台南":
+        hour = dt.strftime("%H")
+        minute = numberSTRConvert(args[0][0:2])[args[0][0:2]]
+        resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+        pass
     if utterance == "我要[一張][九點][半]出發的票":
         # write your code here
         datetime = amountSTRConvert(args[1]+args[2])["time"]

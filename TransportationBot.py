@@ -290,7 +290,7 @@ def ticketPriceStandard(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
 if __name__ == "__main__":
-    inputLIST = ["五點從台北到台中"]
+    inputLIST = ["我要一張五十分到台南的票"]
     resultDICT = runLoki(inputLIST)
     print(resultDICT)
     # print("Result => {}".format(resultDICT))
