@@ -28,17 +28,20 @@ def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
     if utterance == "[一張]從[台北]往台南的票":
         # write your code here
-        resultDICT['departure'] = args[1]
+        if "從{}".format(args[0]) in utterance:
+            resultDICT['departure'] = args[1]
         pass
 
     if utterance == "我要從[台北]到台南的票[一張]":
         # write your code here
-        resultDICT['departure'] = args[0]
+        if "從{}".format(args[0]) in utterance:
+            resultDICT['departure'] = args[0]
         pass
 
     if utterance == "給我[一張]從[台北]到台南的票":
         # write your code here
-        resultDICT['departure'] = args[1]
+        if "從{}".format(args[0]) in utterance:
+            resultDICT['departure'] = args[0]
         pass
 
     if utterance == "7:46[台北]到台南的票[一張]":
@@ -59,6 +62,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
         resultDICT['departure'] = args[0]
         pass
     if utterance == "從[台北]":
-        resultDICT['departure'] = args[0]
+        if "從{}".format(args[0]) in utterance:
+            resultDICT['departure'] = args[0]
         pass
     return resultDICT

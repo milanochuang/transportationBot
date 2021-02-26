@@ -44,10 +44,13 @@
 import datetime
 dt = datetime.datetime
 import json
+import logging
 from ref_data import stationLIST
 import requests
 from THRS import *
 import time
+
+logging.basicConfig(level=logging.DEBUG)
 
 try:
     from intent import Loki_departure_time
@@ -67,7 +70,7 @@ except:
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = ""
+LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -287,14 +290,11 @@ def ticketPriceStandard(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
 if __name__ == "__main__":
-    inputLIST = ["下午五點半台北到左營"]
+    inputLIST = ["從台南到左營"]
     resultDICT = runLoki(inputLIST)
     print(resultDICT)
-    # time = amountSTRConvert(resultDICT['time'])
-    # print(time)
     # print("Result => {}".format(resultDICT))
-    # result = getTrainStationStartEnd(curl, "0990", "1070", "2021-01-01")
-    # print(result)
     # print(ticketTime('早上五點半台北到左營'))
     # print(ticketPrice('5個小孩台北到桃園'))
+    
     

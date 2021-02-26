@@ -22,6 +22,12 @@ articut = ArticutAPI.Articut()
 from datetime import datetime
 dt = datetime.now()
 
+def timeConverter(time_str):
+    t = time_str + " PM"
+    in_time = datetime.strptime(t, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    return out_time
+
 def amountSTRConvert(inputSTR):
     resultDICT={}
     resultDICT = articut.parse(inputSTR, level="lv3")
@@ -94,18 +100,24 @@ def getResult(inputSTR, utterance, args, resultDICT):
         datetime = amountSTRConvert(args[0])["time"]
         resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3] 
         pass
-    if utterance == "[七點]整台北到新竹":
-        datetime = amountSTRConvert(args[0])["time"]
-        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3] 
     if utterance == "[五十分]從台北到台中":
-        hour = dt.strftime("%H")
-        minute = numberSTRConvert(args[0][0:2])[args[0][0:2]]
-        resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+        if args[0][-1] in "分一二三四五六七八九十":
+            if args[0][1] in "點時": #問時又問分
+                print(args[0])
+                datetime = amountSTRConvert(args[0])["time"]
+                resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
+            else: # 只有分
+                hour = dt.strftime("%H")
+                minute = numberSTRConvert(args[0][0:2])[args[0][0:2]]
+                resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+        else: # 只有時
+            datetime = amountSTRConvert(args[0])["time"]
+            resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]     
     if utterance == "[早上][五點][半]台北到左營":
         datetime = amountSTRConvert(args[1]+args[2])["time"]
         if args[0] == '早上':
             resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
         else:
-            time = datetime[0][0]["datetime"][-8:-3]+" AM"
-            resultDICT['departure_time'] = datetime.strptime(time, "%H:%M")
+            t = datetime[0][0]["datetime"][-8:-3]
+            resultDICT['departure_time'] = timeConverter(t)
     return resultDICT

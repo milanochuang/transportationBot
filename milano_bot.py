@@ -5,11 +5,14 @@ import discord
 import datetime
 dt = datetime.datetime
 import json
+import logging
 from ref_data import stationLIST
 from TransportationBot import runLoki
 import time
 
-DISCORD_TOKEN=""
+logging.basicConfig(level=logging.DEBUG)
+
+DISCORD_TOKEN="Nzg5Mzc0ODk3OTA5Mzk5NjA1.X9xIqQ.9KAalC5JBzwSkjLOvsFACk7fFtk"
 DISCORD_GUILD="Droidtown Linguistics Tech."
 BOT_NAME = "幫你買票機器人"
 
@@ -34,18 +37,23 @@ def ticketTime(message): #
     departure = resultDICT['departure'] #str
     destination = resultDICT['destination'] #str
     if 'departure_time' in resultDICT:
+        logging.debug('departure time in resultDICT')
         time = resultDICT['departure_time']
     elif 'destination_time' in resultDICT:
+        logging.debug('destination time in resultDICT')
         time = resultDICT['destination_time'] #check if the time is correctly put in resultDICT
     else:
+        logging.debug('Take the present time')
         time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
     departureTimeList=list()
     timeTable = loadJson("THRS_timetable.json") #DICT
     for station in stationLIST:
         if departure == station['stationName']:
+            logging.debug('Departure sequence = 0 recorded')
             departureSeq = station['stationSeq'] #Normally departureSequence & destinationSeq will be object of integer
         if destination == station['stationName']:
+            logging.debug('destination sequence recorded')
             destinationSeq = station['stationSeq']
     if departureSeq < destinationSeq: 
         # check if it's going north or south. 
@@ -53,8 +61,10 @@ def ticketTime(message): #
         direction = 0
         for trainSchedule in timeTable:
             if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: # Check json
+                logging.debug('direction checked')
                 for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
                     if departure == trainStop['StationName']['Zh_tw']:
+                        logging.debug('departure name checked')
                         if 'DepartureTime' in trainStop:
                             dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
                             if dtDepartureTime > dtMessageTime:
@@ -65,8 +75,10 @@ def ticketTime(message): #
         direction = 1
         for trainSchedule in timeTable:
             if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #check json
+                logging.debug('direction = 1 checked')
                 for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
                     if departure == trainStop['StationName']['Zh_tw']:
+                        logging.debug('destination name checked')
                         if 'DepartureTime' in trainStop:
                             dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
                             if dtDepartureTime > dtMessageTime:
@@ -81,18 +93,24 @@ def ticketPrice(message):
     departure = resultDICT['departure']
     destination = resultDICT['destination']
     if 'adultAmount' in resultDICT:
+        logging.debug('debug message')
         adultAmount = resultDICT['adultAmount']
     else:
+        logging.debug('debug message')
         adultAmount = 0
     if 'childrenAmount' in resultDICT:
+        logging.debug('debug message')
         childrenAmount = resultDICT['childrenAmount']
     else:
+        logging.debug('debug message')
         childrenAmount = 0
     priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
+            logging.debug('debug message')
             for fareType in i['Fares']:
                 if fareType['TicketType'] == "標準":
+                    logging.debug('debug message')
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
