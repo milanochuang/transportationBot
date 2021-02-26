@@ -93,24 +93,24 @@ def ticketPrice(message):
     departure = resultDICT['departure']
     destination = resultDICT['destination']
     if 'adultAmount' in resultDICT:
-        logging.debug('debug message')
+        logging.debug('adult exist')
         adultAmount = resultDICT['adultAmount']
     else:
-        logging.debug('debug message')
+        logging.debug('no adult')
         adultAmount = 0
     if 'childrenAmount' in resultDICT:
-        logging.debug('debug message')
+        logging.debug('children exist')
         childrenAmount = resultDICT['childrenAmount']
     else:
-        logging.debug('debug message')
+        logging.debug('no children')
         childrenAmount = 0
     priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
-            logging.debug('debug message')
+            logging.debug('station name match')
             for fareType in i['Fares']:
                 if fareType['TicketType'] == "標準":
-                    logging.debug('debug message')
+                    logging.debug('standard detected')
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
@@ -124,11 +124,15 @@ def ticketPriceBusiness(message):
     destination = resultDICT['destination']
     if 'adultAmount' in resultDICT:
         adultAmount = resultDICT['adultAmount']
+        logging.debug('adult exist')
     else:
+        logging.debug('no adult')
         adultAmount = 0
     if 'childrenAmount' in resultDICT:
+        logging.debug('children exist')
         childrenAmount = resultDICT['childrenAmount']
     else:
+        logging.debug('no children')
         childrenAmount = 0
     priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
@@ -147,12 +151,16 @@ def ticketPriceFree(message):
     departure = resultDICT['departure']
     destination = resultDICT['destination']
     if 'adultAmount' in resultDICT:
+        logging.debug('adult exist')
         adultAmount = resultDICT['adultAmount']
     else:
+        logging.debug('no adult')
         adultAmount = 0
     if 'childrenAmount' in resultDICT:
+        logging.debug('children exist')
         childrenAmount = resultDICT['childrenAmount']
     else:
+        logging.debug('no children')
         childrenAmount = 0
     priceInfo = loadJson('THRS_ticketPrice.json') #DICT
     for i in priceInfo:
@@ -184,6 +192,7 @@ async def on_message(message):
     if "<@!{}>".format(client.user.id) in message.content:
         paxDICT = {}
         if "出來" in message.content:
+            logging.debug('initiator succeed')
             response = "<@!{}>".format(message.author.id) + "\n若想「查詢票價」，請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩?\n若您有特殊需求，請在輸入時註明「商務」或「自由」，謝謝。\n若想「查詢班次」，請告訴我您什麼時候要從哪裡出發到哪裡?"
             await message.channel.send(response)
             return
@@ -196,7 +205,9 @@ async def on_message(message):
             inputLIST = [inputSTR]
             resultDICT = runLoki(inputLIST)
             if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: #2
+                logging.debug('count the price')
                 if '商務' in message.content:
+                    logging.debug('business class')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
                     if 'departure' in resultDICT:
@@ -226,6 +237,7 @@ async def on_message(message):
                     await message.channel.send(ticketPriceBusiness(inputSTR))
                     del paxDICT[str(message.author.id)]
                 if '自由' in message.content:
+                    logging.debug('free type')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
                     if 'departure' in resultDICT:
@@ -255,6 +267,7 @@ async def on_message(message):
                     await message.channel.send(ticketPriceFree(inputSTR))
                     del paxDICT[str(message.author.id)]
                 else:
+                    logging.debug('standard type')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
                     if 'departure' in resultDICT:
@@ -284,6 +297,7 @@ async def on_message(message):
                     await message.channel.send(ticketPrice(inputSTR))
                     del paxDICT[str(message.author.id)]
             else: #1
+                logging.debug('time checked')
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
