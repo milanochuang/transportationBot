@@ -70,7 +70,7 @@ except:
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
+LOKI_KEY = ""
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -290,7 +290,7 @@ def ticketPriceStandard(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
 if __name__ == "__main__":
-    inputLIST = ["從台南到左營"]
+    inputLIST = ["五點從台北到台中"]
     resultDICT = runLoki(inputLIST)
     print(resultDICT)
     # print("Result => {}".format(resultDICT))

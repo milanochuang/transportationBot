@@ -61,7 +61,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "我要去[台北車站]":
         # write your code here
-        if "去{}".format(args[0]) in utterance:
+        if "去{}".format(args[0]) in inputSTR:
             resultDICT['destination'] = args[0]
         pass
 
@@ -69,5 +69,8 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # write your code here
         resultDICT['destination'] = args[0]
         pass
-
+    if utterance == "去[台北]":
+        if "去{}".format(args[0]) in inputSTR:
+            resultDICT['destination'] = args[0]
+        pass
     return resultDICT

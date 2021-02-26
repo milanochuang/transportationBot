@@ -100,19 +100,18 @@ def getResult(inputSTR, utterance, args, resultDICT):
         datetime = amountSTRConvert(args[0])["time"]
         resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3] 
         pass
+    if utterance == "[五點][五十分]從台北到台中":
+        datetime = amountSTRConvert(args[0]+args[1])["time"]
+        resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
     if utterance == "[五十分]從台北到台中":
-        if args[0][-1] in "分一二三四五六七八九十":
-            if args[0][1] in "點時": #問時又問分
-                print(args[0])
-                datetime = amountSTRConvert(args[0])["time"]
-                resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]
-            else: # 只有分
+        if len(args) == 1:  
+            if args[0][-1] in "分一二三四五六七八九十":
                 hour = dt.strftime("%H")
                 minute = numberSTRConvert(args[0][0:2])[args[0][0:2]]
                 resultDICT['departure_time'] = "{}:{}".format(hour, minute)
-        else: # 只有時
-            datetime = amountSTRConvert(args[0])["time"]
-            resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]     
+            else: # 只有時
+                datetime = amountSTRConvert(args[0])["time"]
+                resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]     
     if utterance == "[早上][五點][半]台北到左營":
         datetime = amountSTRConvert(args[1]+args[2])["time"]
         if args[0] == '早上':
