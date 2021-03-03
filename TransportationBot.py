@@ -267,7 +267,7 @@ def ticketTime(message):
     departureTimeList.sort()
     print(resultDICT)
     return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-def ticketPriceStandard(message):
+def ticketPrice(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure']
@@ -289,12 +289,40 @@ def ticketPriceStandard(message):
                     childrenPrice = 0.5*adultPrice
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
+def ticketPriceFree(message):
+    inputLIST = [message]
+    resultDICT = runLoki(inputLIST)
+    departure = resultDICT['departure']
+    destination = resultDICT['destination']
+    if 'adultAmount' in resultDICT:
+        logging.debug('adult exist')
+        adultAmount = resultDICT['adultAmount']
+    else:
+        logging.debug('no adult')
+        adultAmount = 0
+    if 'childrenAmount' in resultDICT:
+        logging.debug('children exist')
+        childrenAmount = resultDICT['childrenAmount']
+    else:
+        logging.debug('no children')
+        childrenAmount = 0
+    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    for i in priceInfo:
+        if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
+            for fareType in i['Fares']:
+                if fareType['TicketType'] == "自由":
+                    adultPrice = fareType['Price']
+                    childrenPrice = 0.5*adultPrice
+    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalAmount = adultAmount + childrenAmount
+    print(adultPrice, childrenPrice)
+    return "從{}到{}的{}張自由座總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 if __name__ == "__main__":
     inputLIST = ["我要一張五十分到台南的票"]
     resultDICT = runLoki(inputLIST)
     print(resultDICT)
     # print("Result => {}".format(resultDICT))
     # print(ticketTime('早上五點半台北到左營'))
-    # print(ticketPrice('5個小孩台北到桃園'))
+    print(ticketPriceFree('自由座兩張 彰化到台北 一個大人一個小孩 19:00'))
     
     
