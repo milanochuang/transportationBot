@@ -85,9 +85,15 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "[三十分]出發":
         # write your code here
-        hour = dt.strftime("%H")
-        minute = amountSTRConvert(args[0][0:2])[args[0][0:2]]
-        resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+        if len(args) == 1:  
+            if args[0][-1] in "分一二三四五六七八九十":
+                hour = dt.strftime("%H")
+                minute = amountSTRConvert(args[0][0:2])[args[0][0:2]]
+                resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+            else: 
+                datetime = timeSTRConvert(args[0][0:2])["time"]
+                dt = datetime[0][0]["datetime"][-8:-3]
+                resultDICT['departure_time'] = format_identifier(dt)
         pass
 
     if utterance == "[下午][三點][五十][之後]":

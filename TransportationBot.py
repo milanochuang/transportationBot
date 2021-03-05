@@ -43,7 +43,11 @@
 """
 from ArticutAPI import ArticutAPI
 articut = ArticutAPI.Articut()
+import datetime
+dt = datetime.datetime
 import json
+import logging
+from ref_data import stationLIST, animalLIST, TaiwanLIST
 from requests import post
 from requests import codes
 import math
@@ -219,6 +223,64 @@ def loadJson(filename):
         result = json.load(f)
     return result
 
+def ticketTime(message): #
+    inputLIST = [message]
+    resultDICT = runLoki(inputLIST)
+    print(resultDICT)
+    departure = resultDICT['departure'] #str
+    destination = resultDICT['destination'] #str
+    if 'departure_time' in resultDICT:
+        logging.debug('departure time in resultDICT')
+        time = resultDICT['departure_time']
+    elif 'destination_time' in resultDICT:
+        logging.debug('destination time in resultDICT')
+        time = resultDICT['destination_time'] #check if the time is correctly put in resultDICT
+    else:
+        logging.debug('Take the present time')
+        time = dt.now().strftime('%H:%M')
+    dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
+    departureTimeList=list()
+    timeTable = loadJson("THRS_timetable.json") #DICT
+    for station in stationLIST:
+        if departure == station['stationName']:
+            logging.debug('Departure sequence = 0 recorded')
+            departureSeq = station['stationSeq'] #Normally departureSequence & destinationSeq will be object of integer
+        if destination == station['stationName']:
+            logging.debug('destination sequence recorded')
+            destinationSeq = station['stationSeq']
+    if departureSeq < destinationSeq: 
+        # check if it's going north or south. 
+        # While departureSeq < destinationSeq, then it's going south.
+        direction = 0
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: # Check json
+                logging.debug('direction checked')
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        logging.debug('departure name checked')
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime > dtMessageTime:
+                                departureTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(departureTime) 
+    if departureSeq > destinationSeq:
+        # While departureSeq < destinationSeq, then it's going south.
+        direction = 1
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #check json
+                logging.debug('direction = 1 checked')
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        logging.debug('destination name checked')
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime > dtMessageTime:
+                                resultTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(resultTime)                            
+    departureTimeList.sort()
+    return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
+
+
 if __name__ == "__main__":
     # # departure_time
     # print("[TEST] departure_time")
@@ -257,7 +319,8 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["五點從左營到嘉義"]
+    inputLIST = ["五點左右台北到左營"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
+    # print(ticketTime("台中往左營，早上七點出發"))
