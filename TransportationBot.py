@@ -41,30 +41,26 @@
             ]
         }
 """
-import datetime
-dt = datetime.datetime
+from ArticutAPI import ArticutAPI
+articut = ArticutAPI.Articut()
 import json
-import logging
-from ref_data import stationLIST
-import requests
-from THRS import *
-import time
-
-logging.basicConfig(level=logging.DEBUG)
+from requests import post
+from requests import codes
+import math
 
 try:
     from intent import Loki_departure_time
-    from intent import Loki_destination_time
-    from intent import Loki_destination
-    from intent import Loki_departure
     from intent import Loki_Children
+    from intent import Loki_destination
+    from intent import Loki_destination_time
+    from intent import Loki_departure
     from intent import Loki_Adult
 except:
     from .intent import Loki_departure_time
-    from .intent import Loki_destination_time
-    from .intent import Loki_destination
-    from .intent import Loki_departure
     from .intent import Loki_Children
+    from .intent import Loki_destination
+    from .intent import Loki_destination_time
+    from .intent import Loki_departure
     from .intent import Loki_Adult
 
 
@@ -76,9 +72,6 @@ LOKI_KEY = ""
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
 INTENT_FILTER = []
 
-from ArticutAPI import ArticutAPI
-articut = ArticutAPI.Articut()
-
 class LokiResult():
     status = False
     message = ""
@@ -86,22 +79,25 @@ class LokiResult():
     balance = -1
     lokiResultLIST = []
 
-    def __init__(self, inputLIST):
+    def __init__(self, inputLIST, filterLIST):
         self.status = False
         self.message = ""
         self.version = ""
         self.balance = -1
         self.lokiResultLIST = []
+        # filterLIST 空的就採用預設的 INTENT_FILTER
+        if filterLIST == []:
+            filterLIST = INTENT_FILTER
 
         try:
-            result = requests.post(LOKI_URL, json={
+            result = post(LOKI_URL, json={
                 "username": USERNAME,
                 "input_list": inputLIST,
                 "loki_key": LOKI_KEY,
-                "filter_list": INTENT_FILTER
+                "filter_list": filterLIST
             })
 
-            if result.status_code == requests.codes.ok:
+            if result.status_code == codes.ok:
                 result = result.json()
                 self.status = result["status"]
                 self.message = result["msg"]
@@ -179,9 +175,9 @@ class LokiResult():
             rst = lokiResultDICT["argument"]
         return rst
 
-def runLoki(inputLIST):
+def runLoki(inputLIST, filterLIST=[]):
     resultDICT = {}
-    lokiRst = LokiResult(inputLIST)
+    lokiRst = LokiResult(inputLIST, filterLIST)
     if lokiRst.getStatus():
         for index, key in enumerate(inputLIST):
             for resultIndex in range(0, lokiRst.getLokiLen(index)):
@@ -189,21 +185,21 @@ def runLoki(inputLIST):
                 if lokiRst.getIntent(index, resultIndex) == "departure_time":
                     resultDICT = Loki_departure_time.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
-                # destination_time
-                if lokiRst.getIntent(index, resultIndex) == "destination_time":
-                    resultDICT = Loki_destination_time.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
+                # Children
+                if lokiRst.getIntent(index, resultIndex) == "Children":
+                    resultDICT = Loki_Children.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
                 # destination
                 if lokiRst.getIntent(index, resultIndex) == "destination":
                     resultDICT = Loki_destination.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
+                # destination_time
+                if lokiRst.getIntent(index, resultIndex) == "destination_time":
+                    resultDICT = Loki_destination_time.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
+
                 # departure
                 if lokiRst.getIntent(index, resultIndex) == "departure":
                     resultDICT = Loki_departure.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
-
-                # Children
-                if lokiRst.getIntent(index, resultIndex) == "Children":
-                    resultDICT = Loki_Children.getResult(key, lokiRst.getUtterance(index, resultIndex), lokiRst.getArgs(index, resultIndex), resultDICT)
 
                 # Adult
                 if lokiRst.getIntent(index, resultIndex) == "Adult":
@@ -212,117 +208,56 @@ def runLoki(inputLIST):
     else:
         resultDICT = {"msg": lokiRst.getMessage()}
     return resultDICT
-def amountSTRConvert(inputSTR):
-    resultDICT={}
-    resultDICT = articut.parse(inputSTR, level="lv3")
-    return resultDICT['number']
+
+def testLoki(inputLIST, filterLIST):
+    INPUT_LIMIT = 20
+    for i in range(0, math.ceil(len(inputLIST) / INPUT_LIMIT)):
+        resultDICT = runLoki(inputLIST[i*INPUT_LIMIT:(i+1)*INPUT_LIMIT], filterLIST)
 
 def loadJson(filename):
     with open(filename,"r") as f:
         result = json.load(f)
     return result
 
-def ticketTime(message):
-    inputLIST = [message]
-    resultDICT = runLoki(inputLIST)
-    departure = resultDICT['departure']
-    destination = resultDICT['destination']
-    if 'departure_time' in resultDICT:
-        time = resultDICT['departure_time']
-    elif 'destination_time' in resultDICT:
-        time = resultDICT['destination_time'] #須確認「抵達時間前的高鐵」邏輯
-    else:
-        time = dt.now().strftime('%H:%M')
-    dtMessageTime = dt.strptime(time, "%H:%M")
-    timeTable = loadJson("THRS_timetable.json")
-    departureTimeList=list()
-    for station in stationLIST:
-        if departure == station['stationName']:
-            departureSeq = station['stationSeq']
-        if destination == station['stationName']:
-            destinationSeq = station['stationSeq']
-    print(destination)
-    if departureSeq < destinationSeq: #判斷北上還是南下 若departureSeq < destinationSeq 則南下 反之則北上 （要記得處理等於的情形）
-        direction = 0
-        for trainSchedule in timeTable:
-            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #確認json檔內的車次是南下還是北上
-                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
-                    if departure == trainStop['StationName']['Zh_tw']:
-                        if 'DepartureTime' in trainStop:
-                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
-                            if dtDepartureTime > dtMessageTime:
-                                departureTime = dt.strftime(dtDepartureTime, "%H:%M")
-                                departureTimeList.append(departureTime) 
-    if departureSeq > destinationSeq:
-        direction = 1
-        for trainSchedule in timeTable:
-            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #確認json檔內的車次是南下還是北上 
-                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
-                    if departure == trainStop['StationName']['Zh_tw']:
-                        if 'DepartureTime' in trainStop:
-                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
-                            if dtDepartureTime > dtMessageTime:
-                                resultTime = dt.strftime(dtDepartureTime, "%H:%M")
-                                departureTimeList.append(resultTime)                            
-    departureTimeList.sort()
-    print(resultDICT)
-    return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-def ticketPrice(message):
-    inputLIST = [message]
-    resultDICT = runLoki(inputLIST)
-    departure = resultDICT['departure']
-    destination = resultDICT['destination']
-    if 'adultAmount' in resultDICT:
-        adultAmount = resultDICT['adultAmount']
-    else:
-        adultAmount = 0
-    if 'childrenAmount' in resultDICT:
-        childrenAmount = resultDICT['childrenAmount']
-    else:
-        childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json')
-    for i in priceInfo:
-        if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
-            for fareType in i['Fares']:
-                if fareType['TicketType'] == "標準":
-                    adultPrice = fareType['Price']
-                    childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
-    return "從{}到{}總共是{}元喔".format(departure, destination, totalPrice)
-def ticketPriceFree(message):
-    inputLIST = [message]
-    resultDICT = runLoki(inputLIST)
-    departure = resultDICT['departure']
-    destination = resultDICT['destination']
-    if 'adultAmount' in resultDICT:
-        logging.debug('adult exist')
-        adultAmount = resultDICT['adultAmount']
-    else:
-        logging.debug('no adult')
-        adultAmount = 0
-    if 'childrenAmount' in resultDICT:
-        logging.debug('children exist')
-        childrenAmount = resultDICT['childrenAmount']
-    else:
-        logging.debug('no children')
-        childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
-    for i in priceInfo:
-        if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
-            for fareType in i['Fares']:
-                if fareType['TicketType'] == "自由":
-                    adultPrice = fareType['Price']
-                    childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
-    totalAmount = adultAmount + childrenAmount
-    print(adultPrice, childrenPrice)
-    return "從{}到{}的{}張自由座總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 if __name__ == "__main__":
-    inputLIST = ["我要一張五十分到台南的票"]
-    resultDICT = runLoki(inputLIST)
-    print(resultDICT)
-    # print("Result => {}".format(resultDICT))
-    # print(ticketTime('早上五點半台北到左營'))
-    print(ticketPriceFree('自由座兩張 彰化到台北 一個大人一個小孩 19:00'))
-    
-    
+    # # departure_time
+    # print("[TEST] departure_time")
+    # inputLIST = ['9:30出發','三十分出發','九點半出發','下午三點之後','五十分到台南','早上九點之前','早上八點出發','7:46台北到台南','9:54從台北到台南','下午三點五十之後','七點四十六分往台南','五十分從台北到台中','十一點從台北到台中','早上九點四十分之前','早上八點三十分出發','下午三點五十分到台南','早上五點半台北到左營','七點四十六分台北往台南','五點五十分從台北到台中']
+    # testLoki(inputLIST, ['departure_time'])
+    # print("")
+
+    # # Children
+    # print("[TEST] Children")
+    # inputLIST = ['三個小孩','三大一小','三小一大','兩張優待票','兩張孩童票','三個大人兩個小孩','三個小孩兩個大人']
+    # testLoki(inputLIST, ['Children'])
+    # print("")
+
+    # # destination
+    # print("[TEST] destination")
+    # inputLIST = ['到台北','去台北','往台北']
+    # testLoki(inputLIST, ['destination'])
+    # print("")
+
+    # # destination_time
+    # print("[TEST] destination_time")
+    # inputLIST = ['九點半以前到台南的票','我要一張9:30以前到台南的票']
+    # testLoki(inputLIST, ['destination_time'])
+    # print("")
+
+    # # departure
+    # print("[TEST] departure")
+    # inputLIST = ['從台北','台北出發','台北去台南','新竹到台北','新竹往台北','從台北到台南','從台北往台南']
+    # testLoki(inputLIST, ['departure'])
+    # print("")
+
+    # # Adult
+    # print("[TEST] Adult")
+    # inputLIST = ['兩大','三個大人','三大一小','三小一大','兩張全票','兩張成人票','三個大人兩個小孩','三個小孩一個大人']
+    # testLoki(inputLIST, ['Adult'])
+    # print("")
+
+    # 輸入其它句子試看看
+    inputLIST = ["五點從左營到嘉義"]
+    filterLIST = []
+    resultDICT = runLoki(inputLIST, filterLIST)
+    print("Result => {}".format(resultDICT))

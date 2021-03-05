@@ -1,3 +1,4 @@
 account.info
 .vscode
 curl-7.74.0_2-win64-mingw
+.DS_Store

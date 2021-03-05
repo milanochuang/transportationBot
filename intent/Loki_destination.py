@@ -3,13 +3,13 @@
 
 """
     Loki module for destination
-    
+
     Input:
         inputSTR      str,
         utterance     str,
         args          str[],
         resultDICT    dict
-    
+
     Output:
         resultDICT    dict
 """
@@ -24,53 +24,22 @@ def debugInfo(inputSTR, utterance):
 
 def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
-    if utterance == "7:46台北到[台南]的票[一張]":
-        # write your code here
-        resultDICT['destination'] = args[0]
-        pass
-
-    if utterance == "[七點][四十六]分台北到[台南]的票[一張]":
-        # write your code here
-        resultDICT['destination'] = args[2]
-        pass
-
     if utterance == "到[台北]":
         # write your code here
-        resultDICT['destination'] = args[0]
+        if "到{}".format(args[0]) in inputSTR:
+            resultDICT['destination'] = args[0]
         pass
 
-    if utterance == "到[台北]的票[一張]":
+    if utterance == "去[台北]":
         # write your code here
-        resultDICT['destination'] = args[0]
+        if "去{}".format(args[0]) in inputSTR:
+            resultDICT['destination'] = args[0]
         pass
 
     if utterance == "往[台北]":
         # write your code here
-        resultDICT['destination'] = args[0]
-        pass
-
-    if utterance == "我要[一張]到[台北]的票":
-        # write your code here
-        resultDICT['destination'] = args[1]
-        pass
-
-    if utterance == "我要到[台北]":
-        # write your code here
-        resultDICT['destination'] = args[0]
-        pass
-
-    if utterance == "我要去[台北車站]":
-        # write your code here
-        if "去{}".format(args[0]) in inputSTR:
+        if "往{}".format(args[0]) in inputSTR:
             resultDICT['destination'] = args[0]
         pass
 
-    if utterance == "我要買從台北到[台南]的車票":
-        # write your code here
-        resultDICT['destination'] = args[0]
-        pass
-    if utterance == "去[台北]":
-        if "去{}".format(args[0]) in inputSTR:
-            resultDICT['destination'] = args[0]
-        pass
     return resultDICT

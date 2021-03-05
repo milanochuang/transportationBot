@@ -3,22 +3,21 @@
 
 """
     Loki module for Adult
-    
+
     Input:
         inputSTR      str,
         utterance     str,
         args          str[],
         resultDICT    dict
-    
+
     Output:
         resultDICT    dict
 """
+from ArticutAPI import ArticutAPI
+articut = ArticutAPI.Articut()
 
 DEBUG_Adult = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
-
-from ArticutAPI import ArticutAPI
-articut = ArticutAPI.Articut()
 
 def amountSTRConvert(inputSTR):
     resultDICT={}
@@ -56,7 +55,20 @@ def getResult(inputSTR, utterance, args, resultDICT):
         # write your code here
         resultDICT['adultAmount'] = amountSTRConvert(args[1][0])[args[1][0]]
         pass
-    if utterance == "有[兩張]成人票":
+
+    if utterance == "[兩]大":
+        # write your code here
+        resultDICT['adultAmount'] = amountSTRConvert(args[0])[args[0]]
+        pass
+
+    if utterance == "[兩張]全票":
+        # write your code here
         resultDICT['adultAmount'] = amountSTRConvert(args[0][0])[args[0][0]]
         pass
+
+    if utterance == "[兩張]成人票":
+        # write your code here
+        resultDICT['adultAmount'] = amountSTRConvert(args[0][0])[args[0][0]]
+        pass
+
     return resultDICT
