@@ -94,7 +94,8 @@ async def on_message(message):
                         await message.channel.send(response)
                         return
                     print(resultDICT)
-                    await message.channel.send("<@!{}>".format(message.author.id) + ticketPriceBusiness(inputSTR))
+                    response = "<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR)
+                    await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
                 elif '自由' in message.content:
                     logging.debug('free type')
@@ -131,8 +132,10 @@ async def on_message(message):
                     if paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST or paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
                         response = "<@!{}>".format(message.author.id) + "呃，你確定你的出發地點跟抵達地點高鐵有到嗎？"
                         await message.channel.send(response)
-                        return                   
-                    await message.channel.send("<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR))
+                        return 
+                    print(resultDICT)
+                    response = "<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR)                  
+                    await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
                 else:
                     logging.debug('standard type')
@@ -152,30 +155,30 @@ async def on_message(message):
                         return
                     if paxDICT[str(message.author.id)]['station']['departure'] == "":
                         response = "<@!{}>".format(message.author.id) + "要記得說你從哪出發，還有要去哪裡喔！"
-                        await message.channel.send("<@!{}>".format(message.author.id) + response)
+                        await message.channel.send(response)
                         return
                     if paxDICT[str(message.author.id)]['station']['destination'] == "":
                         response = "<@!{}>".format(message.author.id) + "要記得說你要去哪裡喔！"
-                        await message.channel.send("<@!{}>".format(message.author.id) + response)
+                        await message.channel.send(response)
                         return
                     if paxDICT[str(message.author.id)]['adultAmount'] == 0 and paxDICT[str(message.author.id)]['childrenAmount'] == 0:
                         response = "<@!{}>".format(message.author.id) + "有幾位大人幾位小孩要記得說喔！"
-                        await message.channel.send("<@!{}>".format(message.author.id) + response)
+                        await message.channel.send(response)
                         return
                     if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
                         response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
-                        await message.channel.send("<@!{}>".format(message.author.id) + response)
+                        await message.channel.send(response)
                         return
                     if paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST or paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
                         response = "<@!{}>".format(message.author.id) + "呃，你確定你的出發地點跟抵達地點高鐵有到嗎？"
                         await message.channel.send(response)
                         return
                     print(resultDICT)
-                    await message.channel.send("<@!{}>".format(message.author.id) + ticketPrice(inputSTR))
+                    response = "<@!{}>".format(message.author.id) + ticketPrice(inputSTR)
+                    await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
             elif bool([a for a in AroundLIST if a in inputSTR]): #1
                 logging.debug('time checked')
-                print(resultDICT)
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -189,31 +192,31 @@ async def on_message(message):
                     await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['departure_time'] == "":
-                    response = "要記得加入你的出發時間喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "要記得加入你的出發時間喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] == "":
-                    response = "要記得說你從哪出發，還有要去哪裡喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "要記得說你從哪出發，還有要去哪裡喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['destination'] == "":
-                    response = "要記得說你要去哪裡喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "要記得說你要去哪裡喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
-                    response = "呃，你已經在目的地了喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST or paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
-                    response = "呃，你確定你的出發地點跟抵達地點高鐵有到嗎？"
+                    response = "<@!{}>".format(message.author.id) + "呃，你確定你的出發地點跟抵達地點高鐵有到嗎？"
                     await message.channel.send(response)
                     return
                 print(resultDICT)
-                await message.channel.send("<@!{}>".format(message.author.id) + ticketTimeAround(inputSTR))
+                response = "<@!{}>".format(message.author.id) + ticketTimeAround(inputSTR)
+                await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
             else: #1
                 logging.debug('time checked')
-                print(resultDICT)
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -227,27 +230,28 @@ async def on_message(message):
                     await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['departure_time'] == "":
-                    response = "要記得加入你的出發時間喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "要記得加入你的出發時間喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] == "":
-                    response = "要記得說你從哪出發，還有要去哪裡喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "要記得說你從哪出發，還有要去哪裡喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['destination'] == "":
-                    response = "要記得說你要去哪裡喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "要記得說你要去哪裡喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
-                    response = "呃，你已經在目的地了喔！"
-                    await message.channel.send("<@!{}>".format(message.author.id) + response)
+                    response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
+                    await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST or paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
-                    response = "呃，你確定你的出發地點跟抵達地點高鐵有到嗎？"
+                    response = "<@!{}>".format(message.author.id) + "呃，你確定你的出發地點跟抵達地點高鐵有到嗎？"
                     await message.channel.send(response)
                     return
                 print(resultDICT)
-                await message.channel.send("<@!{}>".format(message.author.id) + ticketTime(inputSTR))
+                response = "<@!{}>".format(message.author.id) + ticketTime(inputSTR)
+                await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
     elif "bot 點名" in message.content:
         response = "有！"
