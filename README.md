@@ -17,16 +17,19 @@ Transportation ChatBot的Repository包含以下內容：
 * [Discord Bot 加入方法](#Discord的加入方法)
 
 ## 内容列表
+:::info
 - [背景](#背景)
 - [安裝](#安裝)
 - [使用說明](#使用說明)
 - [範例](#範例)
 - [相關Repositories](#相關Repositories)
 - [作者](#作者)
-
+:::
 ## 背景
+:::success
 :bulb:不知道你有沒有過以下經驗：
 搭高鐵想知道離現在最接近時間的高鐵或者是票價，但是又很不想按進去高鐵訂票APP輸入起訖車站還有出發時間，因為這樣又要按半天，確認自己有沒有輸入錯誤或是按錯，點APP上的按鍵又很容易按錯，最後弄到自己「氣身惱命」的嗎？只要在Line或是Discord上加入Transportation ChatBot，就可以直接以自然語言查詢你想知道的資訊喔！
+:::
 
 ## 安裝
 
@@ -44,6 +47,8 @@ $ pip install datetime
 $ pip install discord
 ```
 
+
+
 ## 使用說明
 ### Discord的加入方法
 ### Line的加入方法
@@ -56,10 +61,10 @@ $ pip install discord
 
 ## 作者
 
-[@milanochuang](https://github.com/milanochuang)<br/>
+[@milanochuang](https://github.com/milanochuang)
 [@KevinKang1211](https://github.com/KevingKang1211)
 
 
 ## How to contribute?
 
-歡迎[提出任何建議](https://github.com/milanochuang/transportationBot/issues/new/choose) 或者提交一個 Pull Request。
+歡迎[提出任何建議](https://github.com/milanochuang/transportationBot/issues/new/choose) 或者提交一个 Pull Request。
