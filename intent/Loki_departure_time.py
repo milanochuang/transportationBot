@@ -45,10 +45,17 @@ def format_identifier(time_STR):
     if dt.strftime("%p") == "PM":
         time_STR = time_STR + "PM"
         dt1 = dateparser.parse(time_STR)
-        time = datetime.strftime(dt1, '%H:%M')
-        return time
+        time_STR = datetime.strftime(dt1, '%H:%M')
+        return time_STR
     else:
         return time_STR
+
+def time_check(hour, minute):
+    if hour < 24 and hour > 1:
+        if minute < 60 and minute >= 0:
+            return True
+    else:
+        return False
 
 # 將符合句型的參數列表印出。這是 debug 或是開發用的。
 def debugInfo(inputSTR, utterance):
@@ -59,14 +66,30 @@ def getResult(inputSTR, utterance, args, resultDICT):
     debugInfo(inputSTR, utterance)
     if utterance == "[7]:[46]台北到台南":
         # write your code here
-        dt = args[0]+":"+args[1]
-        resultDICT['departure_time'] = format_identifier(dt)
+        hour = int(args[0])
+        if args[1][0] != "0":
+            minute = int(args[1])
+        else:
+            minute = int(args[1][1])
+        if time_check(hour, minute):
+            dt = args[0] + ":" + args[1]
+            resultDICT ['departure_time'] = format_identifier(dt)
+        else:
+            resultDICT ['departure_time'] = ""
         pass
 
     if utterance == "[9]:[30]出發":
         # write your code here
-        dt = args[0]+":"+args[1]
-        resultDICT['departure_time'] = format_identifier(dt)
+        hour = int(args[0])
+        if args[1][0] != "0":
+            minute = int(args[1])
+        else:
+            minute = int(args[1][1])
+        if time_check(hour, minute):
+            dt = args[0] + ":" + args[1]
+            resultDICT ['departure_time'] = format_identifier(dt)
+        else:
+            resultDICT ['departure_time'] = ""
         pass
 
     if utterance == "[七點][四十六分]台北往台南":

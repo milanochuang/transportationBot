@@ -39,7 +39,7 @@ async def on_message(message):
     print("message.content", message.content)
     if "<@!{}>".format(client.user.id) in message.content:
         paxDICT = {}
-        if "出來" in message.content:
+        if message.content == "出來":
             logging.debug('initiator succeed')
             response = "<@!{}>".format(message.author.id) + "\n若想「查詢票價」，請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩?\n（若您有特殊需求，請在輸入時註明「商務」或「自由」，謝謝。）\n若想「查詢班次」，請告訴我您什麼時候要從哪裡出發到哪裡?"
             await message.channel.send(response)
@@ -55,8 +55,7 @@ async def on_message(message):
             if set(animalLIST).intersection(set(inputSTR)):
                 response = "<@!{}>".format(message.author.id) + "原則上高鐵不允許帶攜帶動物進入，但如果您要攜帶寵物上高鐵的話，請您要確認高鐵公司已同意其為不妨害公共安全的動物，且完固包裝於長、寬、高尺寸小於 55 公分、45公分、38公分之容器內，無糞便、液體漏出之虞。"
                 await message.channel.send(response)
-            if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: #2
-                logging.debug('count the price')
+            if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: 
                 if '商務' in message.content:
                     logging.debug('business class')
                     if str(message.author.id) not in paxDICT:
@@ -137,7 +136,7 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR)                  
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
-                else:
+                else: #'標準'
                     logging.debug('standard type')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
@@ -177,7 +176,7 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + ticketPrice(inputSTR)
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
-            elif bool([a for a in AroundLIST if a in inputSTR]): #1
+            elif bool([a for a in AroundLIST if a in inputSTR]): # 時間附近
                 logging.debug('time checked')
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
@@ -192,7 +191,7 @@ async def on_message(message):
                     await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['departure_time'] == "":
-                    response = "<@!{}>".format(message.author.id) + "要記得加入你的出發時間喔！"
+                    response = "<@!{}>".format(message.author.id) + "要記得加入你的出發時間，並確認你的時間打對喔！"
                     await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] == "":
@@ -215,7 +214,7 @@ async def on_message(message):
                 response = "<@!{}>".format(message.author.id) + ticketTimeAround(inputSTR)
                 await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
-            else: #1
+            else: # 時間
                 logging.debug('time checked')
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
@@ -230,7 +229,7 @@ async def on_message(message):
                     await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['departure_time'] == "":
-                    response = "<@!{}>".format(message.author.id) + "要記得加入你的出發時間喔！"
+                    response = "<@!{}>".format(message.author.id) + "要記得加入你的出發時間，並確認你的時間打對喔！"
                     await message.channel.send(response)
                     return
                 if paxDICT[str(message.author.id)]['station']['departure'] == "":

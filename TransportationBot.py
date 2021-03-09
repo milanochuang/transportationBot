@@ -472,7 +472,7 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["五點左右台北到左營"]
+    inputLIST = ["台北到台中 19:05 自由座"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
