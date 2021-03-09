@@ -62,4 +62,4 @@ $ pip install discord
 
 ## How to contribute?
 
-歡迎[提出任何建議](https://github.com/milanochuang/transportationBot/issues/new/choose) 或者提交一个 Pull Request。
+歡迎[提出任何建議](https://github.com/milanochuang/transportationBot/issues/new/choose) 或者提交一個 Pull Request。
