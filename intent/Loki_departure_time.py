@@ -18,7 +18,7 @@ articut = ArticutAPI.Articut()
 from datetime import datetime
 dt = datetime.now()
 import dateparser
-from ref_data import PMList
+from ref_data import PMLIST
 DEBUG_departure_time = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
 
@@ -33,7 +33,7 @@ def timeSTRConvert(inputSTR):
     return resultDICT
 
 def format_convert(PM, time_STR):
-    if PM in PMList:
+    if PM in PMLIST:
         time_STR = time_STR + "PM"
         dt1 = dateparser.parse(time_STR)
         time = datetime.strftime(dt1, '%H:%M')
@@ -196,7 +196,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "[早上][八點]出發":
         # write your code here
-        datetime = timeSTRConvert(args[1])['time']
+        datetime = timeSTRConvert(args[1][:2])['time']
         time_STR = datetime[0][0]["datetime"][-8:-3]
         resultDICT['departure_time'] = format_convert(args[0], time_STR)
         pass

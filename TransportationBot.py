@@ -239,7 +239,7 @@ def ticketTime(message): #
         time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
     departureTimeList=list()
-    timeTable = loadJson("THRS_timetable.json") #DICT
+    timeTable = loadJson("THSR_timetable.json") #DICT
     for station in stationLIST:
         if departure == station['stationName']:
             logging.debug('Departure sequence = 0 recorded')
@@ -298,7 +298,7 @@ def ticketTimeAround(message): #
     dtMessageTimeAround = dt.strptime(messageTimeAround,"%H:%M")    
     departureTimeList = list()
     departureTimeAroundList = list()
-    timeTable = loadJson("THRS_timetable.json") #DICT
+    timeTable = loadJson("THSR_timetable.json") #DICT
     for station in stationLIST:
         if departure == station['stationName']:
             logging.debug('Departure sequence = 0 recorded')
@@ -362,7 +362,7 @@ def ticketPrice(message):
     else:
         logging.debug('no children')
         childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    priceInfo = loadJson('THSR_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             logging.debug('station name match')
@@ -392,7 +392,7 @@ def ticketPriceBusiness(message):
     else:
         logging.debug('no children')
         childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    priceInfo = loadJson('THSR_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
@@ -420,7 +420,7 @@ def ticketPriceFree(message):
     else:
         logging.debug('no children')
         childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    priceInfo = loadJson('THSR_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
@@ -472,8 +472,8 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["台北到台中 19:05 自由座"]
+    inputLIST = ["早上八點左右出發 從台北到台中"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
-    # print(ticketTime("台中往左營，早上七點出發"))
+    print(ticketTime("五點五十從台北到台中"))

@@ -18,7 +18,7 @@ articut = ArticutAPI.Articut()
 import dateparser
 from datetime import datetime
 dt = datetime.now()
-from ref_data import PMList
+from ref_data import PMLIST
 
 DEBUG_destination_time = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
