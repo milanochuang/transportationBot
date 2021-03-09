@@ -56,7 +56,7 @@ $ pip install discord
 
 ## 作者
 
-[@milanochuang](https://github.com/milanochuang)
+[@milanochuang](https://github.com/milanochuang)<br/>
 [@KevinKang1211](https://github.com/KevingKang1211)
 
 
