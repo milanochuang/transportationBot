@@ -42,4 +42,8 @@ def getResult(inputSTR, utterance, args, resultDICT):
             resultDICT['destination'] = args[0]
         pass
 
+    if utterance == "回[台北]":
+        if "回{}".format(args[0]) in inputSTR:
+            resultDICT['destination'] = args[0]
+        pass
     return resultDICT

@@ -6,7 +6,7 @@ import datetime
 dt = datetime.datetime
 import json
 import logging
-from ref_data import stationLIST, animalLIST, TaiwanLIST, AroundLIST, callLIST, byeLIST
+from ref_data import stationLIST, animalLIST, TaiwanLIST, AroundLIST, callLIST, byeLIST, nowLIST
 from TransportationBot import runLoki
 import time
 
@@ -25,7 +25,6 @@ def loadJson(filename):
     with open(filename,"r") as f:
         result = json.load(f)
     return result
-
 def ticketTime(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -80,8 +79,10 @@ def ticketTime(message): #
                                 departureTime = dt.strftime(dtDepartureTime, "%H:%M")
                                 departureTimeList.append(departureTime)                            
     departureTimeList.sort()
-    return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-
+    if len(departureTimeList) == 0:
+        return "糟糕，已經沒有班次了，趕快去搭台鐵，或是找飯店吧！"
+    else:
+        return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
 def ticketTimeAround(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -146,8 +147,10 @@ def ticketTimeAround(message): #
                                 departureTimeAroundList.append(departureTimeAround)                            
     departureTimeList.sort()
     departureTimeAroundList.sort(reverse = True)
-    return "以下是您{}附近可搭乘的班次時間：{} 以及 {}".format(resultDICT['departure_time'], departureTimeList[0], departureTimeAroundList[0])
-
+    if len(departureTimeList) == 0:
+        return "糟糕，已經沒有班次了，趕快去搭台鐵，或是找飯店吧！"
+    else:
+        return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])    
 def ticketPrice(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -177,7 +180,6 @@ def ticketPrice(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張標準座位總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
-
 def ticketPriceBusiness(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -205,7 +207,6 @@ def ticketPriceBusiness(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張商務艙總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
-
 def ticketPriceFree(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -315,7 +316,7 @@ async def on_message(message):
                             response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(destination)
                             await message.channel.send(response)
                             return
-                        elif paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST and paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                        else:
                             departure = paxDICT[str(message.author.id)]['station']['departure']
                             destination = paxDICT[str(message.author.id)]['station']['destination']
                             response = "<@!{}>".format(message.author.id) + "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
@@ -368,7 +369,7 @@ async def on_message(message):
                             response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(destination)
                             await message.channel.send(response)
                             return
-                        elif paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST and paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                        else:
                             departure = paxDICT[str(message.author.id)]['station']['departure']
                             destination = paxDICT[str(message.author.id)]['station']['destination']
                             response = "<@!{}>".format(message.author.id) + "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
@@ -421,7 +422,7 @@ async def on_message(message):
                             response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(destination)
                             await message.channel.send(response)
                             return
-                        elif paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST and paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                        else:
                             departure = paxDICT[str(message.author.id)]['station']['departure']
                             destination = paxDICT[str(message.author.id)]['station']['destination']
                             response = "<@!{}>".format(message.author.id) + "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
@@ -433,6 +434,50 @@ async def on_message(message):
                     del paxDICT[str(message.author.id)]
             elif bool([a for a in AroundLIST if a in inputSTR]): # 時間附近
                 logging.debug('time checked')
+                if str(message.author.id) not in paxDICT:
+                    paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}}
+                if 'departure' in resultDICT:
+                    paxDICT[str(message.author.id)]['station']['departure'] = resultDICT['departure']
+                if 'destination' in resultDICT:
+                    paxDICT[str(message.author.id)]['station']['destination'] = resultDICT['destination']
+                if paxDICT[str(message.author.id)]['station']['departure'] == "高雄" or paxDICT[str(message.author.id)]['station']['destination'] == "高雄":
+                    response = "<@!{}>".format(message.author.id) + "高鐵沒有高雄站只有左營站喔"
+                    await message.channel.send(response)
+                    return
+                if paxDICT[str(message.author.id)]['station']['departure'] == "":
+                    response = "<@!{}>".format(message.author.id) + "要記得說你從哪出發，還有要去哪裡喔！"
+                    await message.channel.send(response)
+                    return
+                if paxDICT[str(message.author.id)]['station']['destination'] == "":
+                    response = "<@!{}>".format(message.author.id) + "要記得說你要去哪裡喔！"
+                    await message.channel.send(response)
+                    return
+                if paxDICT[str(message.author.id)]['station']['departure'] == paxDICT[str(message.author.id)]['station']['destination']:
+                    response = "<@!{}>".format(message.author.id) + "呃，你已經在目的地了喔！"
+                    await message.channel.send(response)
+                    return
+                if paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST or paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                    if paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST:
+                        departure = paxDICT[str(message.author.id)]['station']['departure']
+                        response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(departure)
+                        await message.channel.send(response)
+                        return
+                    elif paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                        destination = paxDICT[str(message.author.id)]['station']['destination']
+                        response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(destination)
+                        await message.channel.send(response)
+                        return
+                    else:
+                        departure = paxDICT[str(message.author.id)]['station']['departure']
+                        destination = paxDICT[str(message.author.id)]['station']['destination']
+                        response = "<@!{}>".format(message.author.id) + "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                        await message.channel.send(response)
+                        return
+                print(resultDICT)
+                response = "<@!{}>".format(message.author.id) + ticketTime(inputSTR)
+                await message.channel.send(response)
+                del paxDICT[str(message.author.id)]
+            elif bool([n for n in nowLIST if n in inputSTR]):
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -472,7 +517,7 @@ async def on_message(message):
                         response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(destination)
                         await message.channel.send(response)
                         return
-                    elif paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST and paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                    else:
                         departure = paxDICT[str(message.author.id)]['station']['departure']
                         destination = paxDICT[str(message.author.id)]['station']['destination']
                         response = "<@!{}>".format(message.author.id) + "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
@@ -523,7 +568,7 @@ async def on_message(message):
                         response = "<@!{}>".format(message.author.id) + "高鐵目前在{}沒有站喔！".format(destination)
                         await message.channel.send(response)
                         return
-                    elif paxDICT[str(message.author.id)]['station']['departure'] not in TaiwanLIST and paxDICT[str(message.author.id)]['station']['destination'] not in TaiwanLIST:
+                    else:
                         departure = paxDICT[str(message.author.id)]['station']['departure']
                         destination = paxDICT[str(message.author.id)]['station']['destination']
                         response = "<@!{}>".format(message.author.id) + "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)

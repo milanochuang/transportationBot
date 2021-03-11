@@ -222,7 +222,6 @@ def loadJson(filename):
     with open(filename,"r") as f:
         result = json.load(f)
     return result
-
 def ticketTime(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -277,8 +276,10 @@ def ticketTime(message): #
                                 departureTime = dt.strftime(dtDepartureTime, "%H:%M")
                                 departureTimeList.append(departureTime)                            
     departureTimeList.sort()
-    return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-
+    if len(departureTimeList) == 0:
+        return "糟糕，已經沒有班次了，趕快去搭台鐵，或是找飯店吧！"
+    else:
+        return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
 def ticketTimeAround(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -343,8 +344,10 @@ def ticketTimeAround(message): #
                                 departureTimeAroundList.append(departureTimeAround)                            
     departureTimeList.sort()
     departureTimeAroundList.sort(reverse = True)
-    return "以下是您{}附近可搭乘的班次時間：{} 以及 {}".format(resultDICT['departure_time'], departureTimeList[0], departureTimeAroundList[0])
-
+    if len(departureTimeList) == 0:
+        return "糟糕，已經沒有班次了，趕快去搭台鐵，或是找飯店吧！"
+    else:
+        return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
 def ticketPrice(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -374,7 +377,6 @@ def ticketPrice(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張標準座位總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
-
 def ticketPriceBusiness(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -402,7 +404,6 @@ def ticketPriceBusiness(message):
     totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張商務艙總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
-
 def ticketPriceFree(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -472,8 +473,9 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["早上八點左右出發 從台北到台中"]
+    inputLIST = ["我現在就想從台北回彰化"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
-    print(ticketTime("五點五十從台北到台中"))
+    print(ticketTime("我現在就想回彰化"))
+    # print(ticketPrice("台北到台南兩張成人票優待票五張"))

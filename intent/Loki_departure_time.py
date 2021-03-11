@@ -33,7 +33,7 @@ def timeSTRConvert(inputSTR):
     return resultDICT
 
 def format_convert(PM, time_STR):
-    if PM in PMLIST:
+    if bool([p for p in PMLIST if p in PM]):
         time_STR = time_STR + "PM"
         dt1 = dateparser.parse(time_STR)
         time = datetime.strftime(dt1, '%H:%M')
@@ -149,9 +149,14 @@ def getResult(inputSTR, utterance, args, resultDICT):
 
     if utterance == "[五十分]到台南":
         # write your code here
-        hour = dt.strftime("%H")
-        minute = timeSTRConvert(args[0][0:2])[args[0][0:2]]
-        resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+        if len(args) == 1:  
+            if args[0][-1] in "分一二三四五六七八九十":
+                hour = dt.strftime("%H")
+                minute = amountSTRConvert(args[0][0:2])[args[0][0:2]]
+                resultDICT['departure_time'] = "{}:{}".format(hour, minute)
+            else: # 只有時
+                datetime = timeSTRConvert(args[0])["time"]
+                resultDICT['departure_time'] = datetime[0][0]["datetime"][-8:-3]     
         pass
 
     if utterance == "[五十分]從台北到台中":
@@ -200,5 +205,10 @@ def getResult(inputSTR, utterance, args, resultDICT):
         time_STR = datetime[0][0]["datetime"][-8:-3]
         resultDICT['departure_time'] = format_convert(args[0], time_STR)
         pass
+
+    if utterance == "[下午][三點]台北到台中":
+        datetime = timeSTRConvert(args[1])['time']
+        time_STR = datetime[0][0]["datetime"][-8:-3]
+        resultDICT['departure_time'] = format_convert(args[0], time_STR)
 
     return resultDICT
