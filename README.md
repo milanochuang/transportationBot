@@ -9,11 +9,11 @@ Transportation ChatBot的Repository包含以下內容：
 2. 自然語言理解之意圖 [Intent](https://github.com/milanochuang/transportationBot/tree/master/intent)。
 3. 高鐵時刻表json檔
 4. 高鐵票價產品表json檔
-6. Transportation ChatBot 的Loki主程式
-7. Line ChatBot 主程式（line_app.py & line_sdk.py）
+5. Transportation ChatBot 的Loki主程式
+6. Line ChatBot 主程式（line_app.py & line_sdk.py）
 * [Line ChatBot 加入方法](#Line的加入方法)
-8. 自然語言理解所需之參考資料
-9. Discord ChatBot 主程式（thsr_bot.py）
+7. 自然語言理解所需之參考資料
+8. Discord ChatBot 主程式（thsr_bot.py）
 * [Discord Bot 加入方法](#Discord的加入方法)
 
 ## 内容列表

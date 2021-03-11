@@ -535,9 +535,9 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["我要晚上九點以前從台北回台南"]
+    inputLIST = ["三大三小 台北往台南"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
-    print(ticketTimeBefore("我要晚上九點以前從台北回台南"))
-    # print(ticketPrice("台北到彰化 三張優待票"))
+    # print(ticketTimeBefore("我要晚上九點以前從台北回台南"))
+    print(ticketPrice("三大三小 台北往台南"))
