@@ -15,7 +15,6 @@
 """
 from ArticutAPI import ArticutAPI
 articut = ArticutAPI.Articut()
-
 DEBUG_Children = True
 userDefinedDICT = {"大": ["大人", "成人"], "小": ["小孩", "孩童"]}
 
