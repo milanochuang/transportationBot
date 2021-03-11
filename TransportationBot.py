@@ -434,7 +434,8 @@ def ticketPrice(message):
                     logging.debug('standard detected')
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張標準座位總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 def ticketPriceBusiness(message):
@@ -461,7 +462,8 @@ def ticketPriceBusiness(message):
                 if fareType['TicketType'] == "商務":
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張商務艙總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 def ticketPriceFree(message):
@@ -491,7 +493,8 @@ def ticketPriceFree(message):
                         childrenPrice = 0.5 * adultPrice - 2.5
                     else:
                         childrenPrice = 0.5 * adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張自由座總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 if __name__ == "__main__":
@@ -532,9 +535,9 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["從台北到新竹 早上九點出發"]
+    inputLIST = ["九點台北到新竹"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
-    print(ticketTimeBefore("從台北到新竹 早上九點出發"))
+    print(ticketTimeBefore("九點台北到新竹"))
     # print(ticketPrice("台北到台南兩張成人票優待票五張"))

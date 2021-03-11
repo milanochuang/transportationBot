@@ -21,9 +21,9 @@ BOT_NAME = "幫你買票機器人"
 
 client = discord.Client()
 def deleter(input_STR):
-    for before in AroundLIST:
+    for before in BeforeLIST:
         input_STR = input_STR.replace(before, "")
-    for after in AroundLIST:
+    for after in AfterLIST:
         input_STR = input_STR.replace(after, "")
     for around in AroundLIST:
         input_STR = input_STR.replace(around, "")
@@ -157,7 +157,7 @@ def ticketTimeAround(message): #
     if len(departureTimeList) == 0:
         return "糟糕，已經沒有班次了，趕快去搭台鐵，或是找飯店吧！"
     else:
-        return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
+        return "以下是您{}附近可搭乘的班次時間： {} 以及 {}".format(resultDICT['departure_time'], departureTimeList[0], departureTimeAroundList[0])
 def ticketTimeBefore(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -244,7 +244,8 @@ def ticketPrice(message):
                     logging.debug('standard detected')
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張標準座位總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 def ticketPriceBusiness(message):
@@ -271,7 +272,8 @@ def ticketPriceBusiness(message):
                 if fareType['TicketType'] == "商務":
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張商務艙總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 def ticketPriceFree(message):
@@ -301,7 +303,8 @@ def ticketPriceFree(message):
                         childrenPrice = 0.5 * adultPrice - 2.5
                     else:
                         childrenPrice = 0.5 * adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     totalAmount = adultAmount + childrenAmount
     return "從{}到{}的{}張自由座總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 
@@ -323,18 +326,18 @@ async def on_message(message):
     print("message.content", message.content)
     if "<@!{}>".format(client.user.id) in message.content:
         paxDICT = {}
-        inputSTR = message.content.replace("<@!{}> ".format(client.user.id), "")
-        if any (e == inputSTR for e in callLIST ):
+        client_message = message.content.replace("<@!{}> ".format(client.user.id), "")
+        if any (e == client_message for e in callLIST ):
             logging.debug('initiator succeed')
             response = "<@!{}>".format(message.author.id) + "\n若想「查詢票價」，請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩?\n（若您有特殊需求，請在輸入時註明「商務」或「自由」，謝謝。）\n若想「查詢班次」，請告訴我您什麼時候要從哪裡出發到哪裡?"
             await message.channel.send(response)
             return
-        if any (e == inputSTR for e in byeLIST ):
+        if any (e == client_message for e in byeLIST ):
             response = "<@!{}>".format(message.author.id) + "祝您旅途愉快！😊"
             await message.channel.send(response)
             return
         else:
-            inputSTR = deleter(input_STR)
+            inputSTR = deleter(client_message)
             inputLIST = [inputSTR]
             resultDICT = runLoki(inputLIST)
             if set(animalLIST).intersection(set(inputSTR)):
@@ -500,7 +503,7 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + ticketPrice(inputSTR)
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
-            elif bool([n for n in nowLIST if n in inputSTR]): # 時間附近
+            elif bool([n for n in nowLIST if n in client_message]): # 時間附近
                 logging.debug('time checked')
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}}
@@ -545,7 +548,7 @@ async def on_message(message):
                 response = "<@!{}>".format(message.author.id) + ticketTime(inputSTR)
                 await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
-            elif bool([a for a in AroundLIST if n in inputSTR]):
+            elif bool([a for a in AroundLIST if a in client_message]):
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -595,7 +598,7 @@ async def on_message(message):
                 response = "<@!{}>".format(message.author.id) + ticketTimeAround(inputSTR)
                 await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
-            elif bool([b for b in BeforeLIST if n in inputSTR]):
+            elif bool([b for b in BeforeLIST if b in client_message]):
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
