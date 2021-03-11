@@ -327,12 +327,12 @@ async def on_message(message):
     if "<@!{}>".format(client.user.id) in message.content:
         paxDICT = {}
         client_message = message.content.replace("<@!{}> ".format(client.user.id), "")
-        if any (e == client_message for e in callLIST ):
+        if any (e == client_message for e in callLIST ): # 呼叫
             logging.debug('initiator succeed')
             response = "<@!{}>".format(message.author.id) + "\n若想「查詢票價」，請告訴我您要從哪裡到哪裡，共有幾個大人幾個小孩?\n（若您有特殊需求，請在輸入時註明「商務」或「自由」，謝謝。）\n若想「查詢班次」，請告訴我您什麼時候要從哪裡出發到哪裡?"
             await message.channel.send(response)
             return
-        if any (e == client_message for e in byeLIST ):
+        if any (e == client_message for e in byeLIST ): # 結束
             response = "<@!{}>".format(message.author.id) + "祝您旅途愉快！😊"
             await message.channel.send(response)
             return
@@ -340,11 +340,11 @@ async def on_message(message):
             inputSTR = deleter(client_message)
             inputLIST = [inputSTR]
             resultDICT = runLoki(inputLIST)
-            if set(animalLIST).intersection(set(inputSTR)):
+            if set(animalLIST).intersection(set(inputSTR)): # 動物回應
                 response = "<@!{}>".format(message.author.id) + "原則上高鐵不允許帶攜帶動物進入，但如果您要攜帶寵物上高鐵的話，請您要確認高鐵公司已同意其為不妨害公共安全的動物，且完固包裝於長、寬、高尺寸小於 55 公分、45公分、38公分之容器內，無糞便、液體漏出之虞。"
                 await message.channel.send(response)
-            if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: #2
-                if '商務' in message.content:
+            if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: # 票價問題
+                if '商務' in message.content: # 商務艙票價
                     logging.debug('business class')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
@@ -397,7 +397,7 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR)
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
-                elif '自由' in message.content:
+                elif '自由' in message.content: # 自由座票價
                     logging.debug('free type')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
@@ -450,7 +450,7 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR)                  
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
-                else: #'標準'
+                else: #'標準艙票價' 
                     logging.debug('standard type')
                     if str(message.author.id) not in paxDICT:
                         paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
@@ -503,7 +503,7 @@ async def on_message(message):
                     response = "<@!{}>".format(message.author.id) + ticketPrice(inputSTR)
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
-            elif bool([n for n in nowLIST if n in client_message]): # 時間附近
+            elif bool([n for n in nowLIST if n in client_message]): # 現在時間
                 logging.debug('time checked')
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"station": {"departure": "", "destination": ""}}
@@ -548,7 +548,7 @@ async def on_message(message):
                 response = "<@!{}>".format(message.author.id) + ticketTime(inputSTR)
                 await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
-            elif bool([a for a in AroundLIST if a in client_message]):
+            elif bool([a for a in AroundLIST if a in client_message]): # 時間附近
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -598,7 +598,7 @@ async def on_message(message):
                 response = "<@!{}>".format(message.author.id) + ticketTimeAround(inputSTR)
                 await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
-            elif bool([b for b in BeforeLIST if b in client_message]):
+            elif bool([b for b in BeforeLIST if b in client_message]): # 時間之前
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                 if 'departure_time' in resultDICT:
@@ -648,7 +648,7 @@ async def on_message(message):
                 response = "<@!{}>".format(message.author.id) + ticketTimeBefore(inputSTR)
                 await message.channel.send(response)
                 del paxDICT[str(message.author.id)]
-            else: # 時間
+            else: # 時間之後
                 logging.debug('time checked')
                 if str(message.author.id) not in paxDICT:
                     paxDICT[str(message.author.id)] = {"departure_time": "", "station": {"departure": "", "destination": ""}}
