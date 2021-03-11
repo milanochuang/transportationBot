@@ -180,7 +180,7 @@ def getResult(inputSTR, utterance, args, resultDICT):
             else: # 只有時
                 datetime = timeSTRConvert(args[0][0:2])["time"]
                 time_STR = datetime[0][0]["datetime"][-8:-3] 
-                resultDICT['departure_time'] = format_identifier(time_STR)    
+                resultDICT['departure_time'] = format_identifier(time_STR)  # 這裡會有問題：「我要下午九點以後從台北回台南」的args[0]是九點以後，所以無法抓到是上午還是下午
         pass
 
     if utterance == "[五點][五十分]從台北到台中":
