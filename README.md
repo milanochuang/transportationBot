@@ -31,15 +31,21 @@ Transportation ChatBot的Repository包含以下內容：
 ## 安裝
 
 這個專案使用了以下套件:
-1. [dateparser](https://pypi.org/project/dateparser/) 
+1. [ArticutAPI](https://pypi.org/project/ArticutAPI/)
+```sh
+$ pip3 install ArticutAPI
+```
+[Articut官方說明文件](https://api.droidtown.co/document/#Articut)
+
+2. [Dateparser](https://pypi.org/project/dateparser/) 
 ```sh
 $ pip install dateparser
 ```
-2. [datetime](https://pypi.org/project/DateTime/)
+3. [Datetime](https://pypi.org/project/DateTime/)
 ```sh
 $ pip install datetime
 ```
-3. [discord](https://pypi.org/project/discord/)
+4. [Discord](https://pypi.org/project/discord/)
 ```sh
 $ pip install discord
 ```
