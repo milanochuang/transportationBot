@@ -35,7 +35,7 @@ Transportation ChatBot的Repository包含以下內容：
 ```sh
 $ pip3 install ArticutAPI
 ```
-[Articut官方說明文件](https://api.droidtown.co/document/#Articut)
+* [Articut官方說明文件](https://api.droidtown.co/document/#Articut)
 
 2. [Dateparser](https://pypi.org/project/dateparser/) 
 ```sh
