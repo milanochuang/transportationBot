@@ -43,7 +43,7 @@ $ pip install datetime
 ```sh
 $ pip install discord
 ```
-
+以及Python3.6以上
 
 
 ## 使用說明
