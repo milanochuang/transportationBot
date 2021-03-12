@@ -1,63 +1,79 @@
-# Transportation ChatBot
+# Transportation ChatBot - 幫你買票的機器人！
 
 
-## 歡迎來到高鐵查詢聊天機器人
-
-Transportation ChatBot的Repository包含以下內容：
-
-1. Articut API 以順利將數字轉換成文字
-2. 自然語言理解之意圖 [Intent](https://github.com/milanochuang/transportationBot/tree/master/intent)。
-3. 高鐵時刻表json檔
-4. 高鐵票價產品表json檔
-5. Transportation ChatBot 的Loki主程式
-6. Line ChatBot 主程式（line_app.py & line_sdk.py）
-* [Line ChatBot 加入方法](#Line的加入方法)
-7. 自然語言理解所需之參考資料
-8. Discord ChatBot 主程式（thsr_bot.py）
-* [Discord Bot 加入方法](#Discord的加入方法)
-
-## 内容列表
-- [背景](#背景)
-- [安裝](#安裝)
-- [使用說明](#使用說明)
-- [範例](#範例)
-- [相關Repositories](#相關Repositories)
-- [作者](#作者)
 ## 背景
 :bulb:不知道你有沒有過以下經驗：
 搭高鐵想知道離現在最接近時間的高鐵或者是票價，但是又很不想按進去高鐵訂票APP輸入起訖車站還有出發時間，因為這樣又要按半天，確認自己有沒有輸入錯誤或是按錯，點APP上的按鍵又很容易按錯，最後弄到自己「氣身惱命」的嗎？只要在Line或是Discord上加入Transportation ChatBot，就可以直接以自然語言查詢你想知道的資訊喔！
 
+## 專案内容列表
+- [目錄](#目錄)
+- [環境設定](#環境設定)
+- [使用說明](#使用說明)
+- [使用者輸入範例](#使用者輸入範例)
+- [相關Repositories](#相關Repositories)
+- [作者](#作者)
 
-## 安裝
 
-這個專案使用了以下套件:
+## 目錄
+Transportation ChatBot的Repository包含以下內容：
+
+1. Discord
+2. Data
+3. Intent_Ref
+
+
+
+## 環境設定
+
+### 註冊Loki帳號
+
+1. 請至[卓騰語言科技](https://api.droidtown.co/)官方網站註冊帳號並登入頁面。
+
+2. 註冊會員 
+
+![](https://i.imgur.com/WLqveN1.jpg)
+
+3. 註冊完成後的登入畫面
+
+![](https://i.imgur.com/03aEksl.jpg)
+
+
+4. 順利登入會員之後，藉由「加值應用」區塊的第一個圖示進入Loki應用程式。
+
+![](https://i.imgur.com/nTf65Hp.jpg)
+
+
+
+### 安裝套件
+本專案使用了以下套件：
+
 1. [ArticutAPI](https://pypi.org/project/ArticutAPI/)
-```sh
+```shell=
 $ pip3 install ArticutAPI
 ```
 * [Articut官方說明文件](https://api.droidtown.co/document/#Articut)
 
 2. [Dateparser](https://pypi.org/project/dateparser/) 
-```sh
+```shell=
 $ pip install dateparser
 ```
 3. [Datetime](https://pypi.org/project/DateTime/)
-```sh
+```shell=
 $ pip install datetime
 ```
-4. [Discord](https://pypi.org/project/discord/)
-```sh
-$ pip install discord
-```
-以及Python3.6以上
+
 
 
 ## 使用說明
-### Discord的加入方法
-### Line的加入方法
-## 範例
-### Discord
-### Line
+* 使用Discord來操作Transportation ChatBot，請點選 **Discord** 資料夾以瀏覽更多說明。
+* 欲讀取已建立好的Loki意圖，請點選 **Intent_Ref** 資料夾瀏覽更多說明。
+
+## 使用者輸入範例
+
+在Discord輸入列標記ChatBot「@幫你買票機器人」，並輸入「出來」以檢視ChatBot兩項功能的使用說明。
+* 查詢「票價」：「五位大人兩位小孩，台北到台中，商務」
+* 查詢「班次」：「下午三點，台南到左營」
+
 ## 相關Repositories
 
 - [LokiHub](https://github.com/Droidtown/LokiHub) — ☑️文意理解工具＆文字轉換API
