@@ -1,4 +1,4 @@
-# Transportation ChatBot - 幫你買票的機器人！
+# Transportation ChatBot - 幫你購票的機器人！
 
 
 ## 背景
@@ -17,11 +17,10 @@
 ## 目錄
 Transportation ChatBot的Repository包含以下內容：
 
-1. Discord
-2. Data
-3. ref
-
-
+1. [Discord](https://github.com/milanochuang/transportationBot/tree/master/Discord)
+2. [Data](https://github.com/milanochuang/transportationBot/tree/master/Data)
+3. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
+4. [Line](https://github.com/milanochuang/transportationBot/tree/master/Line)
 
 ## 環境設定
 
