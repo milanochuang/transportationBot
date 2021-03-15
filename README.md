@@ -19,7 +19,7 @@ Transportation ChatBot的Repository包含以下內容：
 
 1. Discord
 2. Data
-3. Intent_Ref
+3. ref
 
 
 
@@ -66,7 +66,7 @@ $ pip install datetime
 
 ## 使用說明
 * 使用Discord來操作Transportation ChatBot，請點選 **Discord** 資料夾以瀏覽更多說明。
-* 欲讀取已建立好的Loki意圖，請點選 **Intent_Ref** 資料夾瀏覽更多說明。
+* 欲讀取已建立好的Loki意圖，請點選 **ref** 資料夾瀏覽更多說明。
 
 ## 使用者輸入範例
 
