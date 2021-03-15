@@ -1,9 +1,9 @@
 # Discord ChatBot 加入方法
 ## 在這裡你可以知道：
-* 環境設定與需求(#環境設定與需求)
-* 如何建立一個Discord Bot(#如何建立一個Discord Bot)
-* 如何在Discord上創建一個自己的伺服器(#如何在Discord上創建一個自己的伺服器)
-* 如何取得Token(#如何取得Token)
+* [環境設定與需求](#環境設定與需求)
+* [如何建立一個DiscordBot](#如何建立一個DiscordBot)
+* [如何在Discord上創建一個自己的伺服器](#如何在Discord上創建一個自己的伺服器)
+* [如何取得Token](#如何取得Token)
 ## 環境設定與需求
 * ### 程式語言版本
     * Discord Bot 需要 Python3.6+ 才跑得起來喔
