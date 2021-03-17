@@ -33,7 +33,7 @@ def loadJson(filename):
     with open(filename,"r") as f:
         result = json.load(f)
     return result
-def ticketTime(message): #
+def ticketTime(message): 
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure'] #str
@@ -88,7 +88,7 @@ def ticketTime(message): #
                                 departureTimeList.append(departureTime)                            
     departureTimeList.sort()
     return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-def ticketTimeAround(message): #
+def ticketTimeAround(message): 
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
     departure = resultDICT['departure'] #str
