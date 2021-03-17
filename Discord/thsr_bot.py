@@ -394,7 +394,7 @@ async def on_message(message):
                             await message.channel.send(response)
                             return
                     print(resultDICT)
-                    response = "<@!{}>".format(message.author.id) + ticketPriceFree(inputSTR)
+                    response = "<@!{}>".format(message.author.id) + ticketPriceBusiness(inputSTR)
                     await message.channel.send(response)
                     del paxDICT[str(message.author.id)]
                 elif '自由' in message.content: # 自由座票價
