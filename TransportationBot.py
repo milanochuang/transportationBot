@@ -70,7 +70,7 @@ except:
 
 LOKI_URL = "https://api.droidtown.co/Loki/BulkAPI/"
 USERNAME = "milanochuang@gmail.com"
-LOKI_KEY = "9gqj7v@AI_1^^o^buxPrHXZ*4E^krJ5"
+LOKI_KEY = ""
 # 意圖過濾器說明
 # INTENT_FILTER = []        => 比對全部的意圖 (預設)
 # INTENT_FILTER = [intentN] => 僅比對 INTENT_FILTER 內的意圖
@@ -535,9 +535,9 @@ if __name__ == "__main__":
     # print("")
 
     # 輸入其它句子試看看
-    inputLIST = ["三大三小 台北往台南"]
+    inputLIST = ["一個成人 四個小孩 從板橋到台北"]
     filterLIST = []
     resultDICT = runLoki(inputLIST, filterLIST)
     print("Result => {}".format(resultDICT))
     # print(ticketTimeBefore("我要晚上九點以前從台北回台南"))
-    print(ticketPrice("三大三小 台北往台南"))
+    print(ticketPrice("一個成人 四個小孩 從板橋到台北"))

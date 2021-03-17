@@ -340,7 +340,7 @@ async def on_message(message):
             inputSTR = deleter(client_message)
             inputLIST = [inputSTR]
             resultDICT = runLoki(inputLIST)
-            if set(animalLIST).intersection(set(inputSTR)): # 動物回應
+            if set(animalLIST).intersection(set(inputSTR)):
                 response = "<@!{}>".format(message.author.id) + "原則上高鐵不允許帶攜帶動物進入，但如果您要攜帶寵物上高鐵的話，請您要確認高鐵公司已同意其為不妨害公共安全的動物，且完固包裝於長、寬、高尺寸小於 55 公分、45公分、38公分之容器內，無糞便、液體漏出之虞。"
                 await message.channel.send(response)
             if 'adultAmount' in resultDICT or 'childrenAmount' in resultDICT: # 票價問題

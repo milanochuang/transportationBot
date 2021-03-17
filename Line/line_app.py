@@ -13,7 +13,7 @@ from flask import jsonify
 import json
 from line_sdk import Linebot
 import logging
-from ref_data import stationLIST, animalLIST, TaiwanLIST, AroundLIST
+from ref_data import stationLIST, animalLIST, TaiwanLIST, AroundLIST, BeforeLIST, nowLIST, AfterLIST
 import time
 from TransportationBot import runLoki
 
@@ -21,12 +21,18 @@ LINE_ACCESS_TOKEN   = ""
 LINE_CHANNEL_SECRET = ""
 
 app = Flask(__name__)
-
+def deleter(input_STR):
+    for before in BeforeLIST:
+        input_STR = input_STR.replace(before, "")
+    for after in AfterLIST:
+        input_STR = input_STR.replace(after, "")
+    for around in AroundLIST:
+        input_STR = input_STR.replace(around, "")
+    return input_STR
 def loadJson(filename):
     with open(filename,"r") as f:
         result = json.load(f)
     return result
-
 def ticketTime(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -43,7 +49,7 @@ def ticketTime(message): #
         time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
     departureTimeList=list()
-    timeTable = loadJson("THRS_timetable.json") #DICT
+    timeTable = loadJson("THSR_timetable.json") #DICT
     for station in stationLIST:
         if departure == station['stationName']:
             logging.debug('Departure sequence = 0 recorded')
@@ -82,7 +88,6 @@ def ticketTime(message): #
                                 departureTimeList.append(departureTime)                            
     departureTimeList.sort()
     return "以下是您指定時間可搭乘最接近的班次時間： {}".format(departureTimeList[0])
-
 def ticketTimeAround(message): #
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -102,7 +107,7 @@ def ticketTimeAround(message): #
     dtMessageTimeAround = dt.strptime(messageTimeAround,"%H:%M")    
     departureTimeList = list()
     departureTimeAroundList = list()
-    timeTable = loadJson("THRS_timetable.json") #DICT
+    timeTable = loadJson("THSR_timetable.json") #DICT
     for station in stationLIST:
         if departure == station['stationName']:
             logging.debug('Departure sequence = 0 recorded')
@@ -148,7 +153,66 @@ def ticketTimeAround(message): #
     departureTimeList.sort()
     departureTimeAroundList.sort(reverse = True)
     return "以下是您{}附近可搭乘的班次時間：{} 以及 {}".format(resultDICT['departure_time'], departureTimeList[0], departureTimeAroundList[0])
-
+def ticketTimeBefore(message): 
+    inputLIST = [message]
+    resultDICT = runLoki(inputLIST)
+    departure = resultDICT['departure'] #str
+    destination = resultDICT['destination'] #str
+    if 'departure_time' in resultDICT:
+        logging.debug('departure time in resultDICT')
+        time = resultDICT['departure_time']
+    elif 'destination_time' in resultDICT:
+        logging.debug('destination time in resultDICT')
+        time = resultDICT['destination_time'] #check if the time is correctly put in resultDICT
+    else:
+        logging.debug('Take the present time')
+        time = dt.now().strftime('%H:%M')
+    dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
+    messageTimeAround = dt.strftime(dtMessageTime + datetime.timedelta(hours=-1), "%H:%M")
+    departureTimeList = list()
+    timeTable = loadJson("THSR_timetable.json") #DICT
+    for station in stationLIST:
+        if departure == station['stationName']:
+            logging.debug('Departure sequence = 0 recorded')
+            departureSeq = station['stationSeq'] #Normally departureSequence & destinationSeq will be object of integer
+        if destination == station['stationName']:
+            logging.debug('destination sequence recorded')
+            destinationSeq = station['stationSeq']
+    if departureSeq < destinationSeq: 
+        # check if it's going north or south. 
+        # While departureSeq < destinationSeq, then it's going south.
+        direction = 0
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: # Check json
+                logging.debug('direction checked')
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        logging.debug('departure name checked')
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M") # convert to datetime format
+                            if dtDepartureTime < dtMessageTime:
+                                departureTime = dt.strftime(dtDepartureTime, "%H:%M") # convert to string format
+                                departureTimeList.append(departureTime)
+    if departureSeq > destinationSeq:
+        # While departureSeq < destinationSeq, then it's going south.
+        direction = 1
+        for trainSchedule in timeTable:
+            if direction == trainSchedule['GeneralTimetable']['GeneralTrainInfo']['Direction']: #check json
+                logging.debug('direction = 1 checked')
+                for trainStop in trainSchedule['GeneralTimetable']['StopTimes']:
+                    if departure == trainStop['StationName']['Zh_tw']:
+                        logging.debug('destination name checked')
+                        if 'DepartureTime' in trainStop:
+                            dtDepartureTime = dt.strptime(trainStop['DepartureTime'], "%H:%M")
+                            if dtDepartureTime < dtMessageTime:
+                                departureTime = dt.strftime(dtDepartureTime, "%H:%M")
+                                departureTimeList.append(departureTime)                       
+    departureTimeList.sort(reverse = True)
+    print(departureTimeList)
+    if len(departureTimeList) == 0:
+        return "糟糕，已經沒有班次了，趕快去搭台鐵，或是找飯店吧！"
+    else:
+        return "以下是您{}之前可搭乘的班次時間：{}".format(resultDICT['departure_time'], departureTimeList[0])
 def ticketPrice(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -166,7 +230,7 @@ def ticketPrice(message):
     else:
         logging.debug('no children')
         childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    priceInfo = loadJson('THSR_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             logging.debug('station name match')
@@ -175,10 +239,10 @@ def ticketPrice(message):
                     logging.debug('standard detected')
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
     totalAmount = adultAmount + childrenAmount
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     return "從{}到{}的{}張標準座位總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
-
 def ticketPriceBusiness(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -196,17 +260,17 @@ def ticketPriceBusiness(message):
     else:
         logging.debug('no children')
         childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    priceInfo = loadJson('THSR_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
                 if fareType['TicketType'] == "商務":
                     adultPrice = fareType['Price']
                     childrenPrice = 0.5*adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
     totalAmount = adultAmount + childrenAmount
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     return "從{}到{}的{}張商務艙總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
-
 def ticketPriceFree(message):
     inputLIST = [message]
     resultDICT = runLoki(inputLIST)
@@ -224,7 +288,7 @@ def ticketPriceFree(message):
     else:
         logging.debug('no children')
         childrenAmount = 0
-    priceInfo = loadJson('THRS_ticketPrice.json') #DICT
+    priceInfo = loadJson('THSR_ticketPrice.json') #DICT
     for i in priceInfo:
         if departure == i['OriginStationName']['Zh_tw'] and destination == i['DestinationStationName']['Zh_tw']:
             for fareType in i['Fares']:
@@ -234,8 +298,9 @@ def ticketPriceFree(message):
                         childrenPrice = 0.5 * adultPrice - 2.5
                     else:
                         childrenPrice = 0.5 * adultPrice
-    totalPrice = adultAmount*adultPrice + childrenAmount*childrenPrice
+    totalPrice = str(adultAmount*adultPrice + childrenAmount*childrenPrice)
     totalAmount = adultAmount + childrenAmount
+    totalPrice = totalPrice.rstrip('0').rstrip('.')
     return "從{}到{}的{}張自由座總共是{}元喔".format(departure, destination, totalAmount, totalPrice)
 
 
@@ -270,7 +335,7 @@ def webhook():
                     #linebot.respText(dataDICT["replyToken"], response)
                     #message()的回應是runLoki return回來的訊息
                     else:
-                        inputSTR = dataDICT["message"]
+                        inputSTR = deleter(dataDICT["message"])
                         inputLIST = [inputSTR]
                         resultDICT = runLoki(inputLIST)
                         if set(animalLIST).intersection(set(inputSTR)):
@@ -306,7 +371,23 @@ def webhook():
                                     response = "呃，你已經在目的地了喔！"
                                     linebot.respText(dataDICT["replyToken"], response)
                                     return
-                                
+                                if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                    if paxDICT['station']['departure'] not in TaiwanLIST:
+                                        departure = paxDICT['station']['departure']
+                                        response = "高鐵目前在{}沒有站喔！".format(departure)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}沒有站喔！".format(destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    else:
+                                        departure = paxDICT['station']['departure']
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
                                 print(resultDICT)
                                 linebot.respText(dataDICT["replyToken"], ticketPriceBusiness(inputSTR))
                                 del paxDICT
@@ -340,11 +421,27 @@ def webhook():
                                     response = "呃，你已經在目的地了喔！"
                                     linebot.respText(dataDICT["replyToken"], response)
                                     return
-                                
+                                if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                    if paxDICT['station']['departure'] not in TaiwanLIST:
+                                        departure = paxDICT['station']['departure']
+                                        response = "高鐵目前在{}沒有站喔！".format(departure)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}沒有站喔！".format(destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    else:
+                                        departure = paxDICT['station']['departure']
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
                                 print(resultDICT)
                                 linebot.respText(dataDICT["replyToken"], ticketPriceFree(inputSTR))
                                 del paxDICT
-                            else:
+                            else: #'標準'
                                 paxDICT = {"station": {"departure": "", "destination": ""}, "adultAmount": 0, "childrenAmount": 0}
                                 if 'departure' in resultDICT:
                                     paxDICT['station']['departure'] = resultDICT['departure']
@@ -374,20 +471,34 @@ def webhook():
                                     response = "呃，你已經在目的地了喔！"
                                     linebot.respText(dataDICT["replyToken"], response)
                                     return
-                                
+                                if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                    if paxDICT['station']['departure'] not in TaiwanLIST:
+                                        departure = paxDICT['station']['departure']
+                                        response = "高鐵目前在{}沒有站喔！".format(departure)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}沒有站喔！".format(destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    else:
+                                        departure = paxDICT['station']['departure']
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
                                 print(resultDICT)
                                 linebot.respText(dataDICT["replyToken"], ticketPrice(inputSTR))
                                 del paxDICT
-                        elif bool([a for a in AroundLIST if a in inputSTR]):
-                            paxDICT = {"departure_time": "", "station": {"departure": "", "destination": ""}}
+                        elif bool([n for n in nowLIST if n in dataDICT["message"]]): #現在時間
+                            paxDICT = {"station": {"departure": "", "destination": ""}}
                             if 'departure' in resultDICT:
                                 paxDICT['station']['departure'] = resultDICT['departure']
                             if 'destination' in resultDICT:
                                 paxDICT['station']['destination'] = resultDICT['destination']
-                            if 'adultAmount' in resultDICT:
-                                paxDICT['adultAmount'] = resultDICT['adultAmount']
-                            if 'childrenAmount' in resultDICT:
-                                paxDICT['childrenAmount'] = resultDICT['childrenAmount']
+                            if 'departure_time' in resultDICT:
+                                paxDICT['departure_time'] = resultDICT['departure_time']
                             if paxDICT['station']['departure'] == "高雄" or paxDICT['station']['destination'] == "高雄":
                                 response = "高鐵沒有高雄站只有左營站喔"
                                 linebot.respText(dataDICT["replyToken"], response)
@@ -404,20 +515,78 @@ def webhook():
                                 response = "呃，你已經在目的地了喔！"
                                 linebot.respText(dataDICT["replyToken"], response)
                                 return
-                            
+                            if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                    if paxDICT['station']['departure'] not in TaiwanLIST:
+                                        departure = paxDICT['station']['departure']
+                                        response = "高鐵目前在{}沒有站喔！".format(departure)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}沒有站喔！".format(destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    else:
+                                        departure = paxDICT['station']['departure']
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                            print(resultDICT)
+                            linebot.respText(dataDICT["replyToken"], ticketTime(inputSTR))
+                            del paxDICT
+                        elif bool([a for a in AroundLIST if a in dataDICT["message"]]): # 時間附近
+                            paxDICT = {"departure_time": "", "station": {"departure": "", "destination": ""}}
+                            if 'departure' in resultDICT:
+                                paxDICT['station']['departure'] = resultDICT['departure']
+                            if 'destination' in resultDICT:
+                                paxDICT['station']['destination'] = resultDICT['destination']
+                            if 'departure_time' in resultDICT:
+                                paxDICT['departure_time'] = resultDICT['departure_time']
+                            if paxDICT['station']['departure'] == "高雄" or paxDICT['station']['destination'] == "高雄":
+                                response = "高鐵沒有高雄站只有左營站喔"
+                                linebot.respText(dataDICT["replyToken"], response)
+                                return
+                            if paxDICT['station']['departure'] == "":
+                                response = "要記得說你從哪出發，還有要去哪裡喔！"
+                                linebot.respText(dataDICT["replyToken"], response)                        
+                                return
+                            if paxDICT['station']['destination'] == "":
+                                response = "要記得說你要去哪裡喔！"
+                                linebot.respText(dataDICT["replyToken"], response)
+                                return
+                            if paxDICT['station']['departure'] == paxDICT['station']['destination']:
+                                response = "呃，你已經在目的地了喔！"
+                                linebot.respText(dataDICT["replyToken"], response)
+                                return
+                            if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                    if paxDICT['station']['departure'] not in TaiwanLIST:
+                                        departure = paxDICT['station']['departure']
+                                        response = "高鐵目前在{}沒有站喔！".format(departure)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}沒有站喔！".format(destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    else:
+                                        departure = paxDICT['station']['departure']
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
                             print(resultDICT)
                             linebot.respText(dataDICT["replyToken"], ticketTimeAround(inputSTR))
                             del paxDICT
-                        else:
+                        elif bool([b for b in BeforeLIST if b in dataDICT["message"]]): # 時間之前
                             paxDICT = {"departure_time": "", "station": {"departure": "", "destination": ""}}
                             if 'departure' in resultDICT:
                                 paxDICT['station']['departure'] = resultDICT['departure']
                             if 'destination' in resultDICT:
                                 paxDICT['station']['destination'] = resultDICT['destination']
-                            if 'adultAmount' in resultDICT:
-                                paxDICT['adultAmount'] = resultDICT['adultAmount']
-                            if 'childrenAmount' in resultDICT:
-                                paxDICT['childrenAmount'] = resultDICT['childrenAmount']
+                            if 'departure_time' in resultDICT:
+                                paxDICT['departure_time'] = resultDICT['departure_time']
                             if paxDICT['station']['departure'] == "高雄" or paxDICT['station']['destination'] == "高雄":
                                 response = "高鐵沒有高雄站只有左營站喔"
                                 linebot.respText(dataDICT["replyToken"], response)
@@ -430,17 +599,73 @@ def webhook():
                                 response = "要記得說你要去哪裡喔！"
                                 linebot.respText(dataDICT["replyToken"], response)
                                 return
-                            if paxDICT['adultAmount'] == 0 and paxDICT['childrenAmount'] == 0:
-                                response = "有幾位大人幾位小孩要記得說喔！"
+                            if paxDICT['station']['departure'] == paxDICT['station']['destination']:
+                                response = "呃，你已經在目的地了喔！"
+                                linebot.respText(dataDICT["replyToken"], response)
+                                return
+                            if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                    if paxDICT['station']['departure'] not in TaiwanLIST:
+                                        departure = paxDICT['station']['departure']
+                                        response = "高鐵目前在{}沒有站喔！".format(departure)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}沒有站喔！".format(destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                                    else:
+                                        departure = paxDICT['station']['departure']
+                                        destination = paxDICT['station']['destination']
+                                        response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                        linebot.respText(dataDICT["replyToken"], response)
+                                        return
+                            print(resultDICT)
+                            linebot.respText(dataDICT["replyToken"], ticketTimeBefore(inputSTR))
+                            del paxDICT                      
+                        else: # 時間之後
+                            paxDICT = {"departure_time": "", "station": {"departure": "", "destination": ""}}
+                            if 'departure' in resultDICT:
+                                paxDICT['station']['departure'] = resultDICT['departure']
+                            if 'destination' in resultDICT:
+                                paxDICT['station']['destination'] = resultDICT['destination']
+                            if 'departure_time' in resultDICT:
+                                paxDICT['departure_time'] = resultDICT['departure_time']
+                            if paxDICT['station']['departure'] == "高雄" or paxDICT['station']['destination'] == "高雄":
+                                response = "高鐵沒有高雄站只有左營站喔"
+                                linebot.respText(dataDICT["replyToken"], response)
+                                return
+                            if paxDICT['station']['departure'] == "":
+                                response = "要記得說你從哪出發，還有要去哪裡喔！"
                                 linebot.respText(dataDICT["replyToken"], response)                        
+                                return
+                            if paxDICT['station']['destination'] == "":
+                                response = "要記得說你要去哪裡喔！"
+                                linebot.respText(dataDICT["replyToken"], response)
                                 return
                             if paxDICT['station']['departure'] == paxDICT['station']['destination']:
                                 response = "呃，你已經在目的地了喔！"
                                 linebot.respText(dataDICT["replyToken"], response)
                                 return
-                            
+                            if paxDICT['station']['departure'] not in TaiwanLIST or paxDICT['station']['destination'] not in TaiwanLIST:
+                                if paxDICT['station']['departure'] not in TaiwanLIST:
+                                    departure = paxDICT['station']['departure']
+                                    response = "高鐵目前在{}沒有站喔！".format(departure)
+                                    linebot.respText(dataDICT["replyToken"], response)
+                                    return
+                                elif paxDICT['station']['destination'] not in TaiwanLIST:
+                                    destination = paxDICT['station']['destination']
+                                    response = "高鐵目前在{}沒有站喔！".format(destination)
+                                    linebot.respText(dataDICT["replyToken"], response)
+                                    return
+                                else:
+                                    departure = paxDICT['station']['departure']
+                                    destination = paxDICT['station']['destination']
+                                    response = "高鐵目前在{}跟{}都沒有站喔！".format(departure, destination)
+                                    linebot.respText(dataDICT["replyToken"], response)
+                                    return
                             print(resultDICT)
-                            linebot.respText(dataDICT["replyToken"], ticketTimeAround(inputSTR))
+                            linebot.respText(dataDICT["replyToken"], ticketTime(inputSTR))
                             del paxDICT
         return jsonify({"status": True, "msg": "Line Webhook Success."})
 
