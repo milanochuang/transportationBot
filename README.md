@@ -17,10 +17,11 @@
 ## 目錄
 Transportation ChatBot的Repository包含以下內容：
 
-1. [Discord](https://github.com/milanochuang/transportationBot/tree/master/Discord)
-2. [Data](https://github.com/milanochuang/transportationBot/tree/master/Data)
-3. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
-4. [Line](https://github.com/milanochuang/transportationBot/tree/master/Line)
+1. [Data](https://github.com/milanochuang/transportationBot/tree/master/Data)
+2. [Discord](https://github.com/milanochuang/transportationBot/tree/master/Discord)
+3. [Line](https://github.com/milanochuang/transportationBot/tree/master/Line)
+4. [LokisTransportationBot](https://github.com/milanochuang/transportationBot/blob/master/LokisTransportationBot.py)
+4. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
 
 ## 環境設定
 
@@ -56,11 +57,6 @@ $ pip3 install ArticutAPI
 ```shell=
 $ pip install dateparser
 ```
-3. [Datetime](https://pypi.org/project/DateTime/)
-```shell=
-$ pip install datetime
-```
-
 
 
 ## 使用說明
@@ -72,6 +68,15 @@ $ pip install datetime
 在Discord輸入列標記ChatBot「@幫你買票機器人」，並輸入「出來」以檢視ChatBot兩項功能的使用說明。
 * 查詢「票價」：「五位大人兩位小孩，台北到台中，商務」
 * 查詢「班次」：「下午三點，台南到左營」
+
+## 下載高鐵時刻表
+:bulb: 我們使用的資料是靜態的高鐵時刻表，所以如果高鐵時刻表有任何更動，要記得下載新的時刻表
+### 怎麼做？
+1. 首先，到[MOTC Transport API V2](https://ptx.transportdata.tw/MOTC?t=Rail&v=2#/)
+2. 尋找「取得票價資料」以及「取得所有車次的定期時刻表資料」
+3. 將Value裡所有的值都留空，以取得全部資料，按下Try it out
+4. 將下面出現的Request URL貼到[THSR.py](https://github.com/milanochuang/transportationBot/blob/master/THSR.py)指定的函式中
+5. 再執行[THSR.py](https://github.com/milanochuang/transportationBot/blob/master/THSR.py)即可下載最新資料
 
 ## 相關Repositories
 

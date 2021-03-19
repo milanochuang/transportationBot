@@ -1,4 +1,8 @@
 # Discord ChatBot 加入方法
+## 目錄
+1. [Intent](https://github.com/milanochuang/transportationBot/tree/master/Discord/intent)
+2. [thsr_bot](https://github.com/milanochuang/transportationBot/blob/master/Discord/thsr_bot.py)
+3. [LokisTransportationBot](https://github.com/milanochuang/transportationBot/blob/master/Discord/LokisTransportationBot.py)
 ## 在這裡你可以知道：
 * [環境設定與需求](#環境設定與需求)
 * [如何建立一個DiscordBot](#如何建立一個DiscordBot)
@@ -28,3 +32,5 @@ $ pip install -U discord.py
 * 複製在核選方塊下方的認證網址（URL）並貼入瀏覽器執行
 * 到Bot/BUILD-A-BOT，並複製下方的TOKEN
 * 將Token貼入[thsr.bot](https://github.com/milanochuang/transportationBot/tree/master/Discord)中的```DISCORD_TOKEN=""```再執行，你的機器人就上線囉！
+
+:bulb: 記得將data裡的三個檔案跟thsr_bot放在同一個資料夾再執行喔！

@@ -173,7 +173,6 @@ def ticketTimeBefore(message):
         logging.debug('Take the present time')
         time = dt.now().strftime('%H:%M')
     dtMessageTime = dt.strptime(time, "%H:%M") #datetime object
-    messageTimeAround = dt.strftime(dtMessageTime + datetime.timedelta(hours=-1), "%H:%M")
     departureTimeList = list()
     timeTable = loadJson("THSR_timetable.json") #DICT
     for station in stationLIST:
