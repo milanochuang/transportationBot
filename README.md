@@ -19,8 +19,9 @@ Transportation ChatBot的Repository包含以下內容：
 1. [Data](https://github.com/milanochuang/transportationBot/tree/master/Data)
 2. [Discord](https://github.com/milanochuang/transportationBot/tree/master/Discord)
 3. [Line](https://github.com/milanochuang/transportationBot/tree/master/Line)
-4. [LokisTransportationBot](https://github.com/milanochuang/transportationBot/blob/master/LokisTransportationBot.py)
-5. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
+4. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
+5. [LokisTransportationBot](https://github.com/milanochuang/transportationBot/blob/master/LokisTransportationBot.py)
+6. [THSR](https://github.com/milanochuang/transportationBot/blob/master/THSR.py)
 
 ## 環境設定
 
