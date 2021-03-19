@@ -1,6 +1,5 @@
 # Transportation ChatBot - 幫你購票的機器人！
 
-‼
 ## 背景
 :bulb:不知道你有沒有過以下經驗：
 搭高鐵想知道離現在最接近時間的高鐵或者是票價，但是又很不想按進去高鐵訂票APP輸入起訖車站還有出發時間，因為這樣又要按半天，確認自己有沒有輸入錯誤或是按錯，點APP上的按鍵又很容易按錯，最後弄到自己「氣身惱命」的嗎？只要在Line或是Discord上加入Transportation ChatBot，就可以直接以自然語言查詢你想知道的資訊喔！
@@ -21,7 +20,7 @@ Transportation ChatBot的Repository包含以下內容：
 2. [Discord](https://github.com/milanochuang/transportationBot/tree/master/Discord)
 3. [Line](https://github.com/milanochuang/transportationBot/tree/master/Line)
 4. [LokisTransportationBot](https://github.com/milanochuang/transportationBot/blob/master/LokisTransportationBot.py)
-4. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
+5. [ref](https://github.com/milanochuang/transportationBot/tree/master/ref)
 
 ## 環境設定
 
