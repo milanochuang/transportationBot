@@ -30,3 +30,5 @@
 ## 建立伺服器
 1. 建立LineBot也需要建立伺服器，可將聊天機器人放入Heroku伺服器，並將伺服器網址放入Messaging API的Webhook URL中
 2. Webhook顯示成功後，聊天機器人就完成囉！
+
+:bulb: 記得將data裡的三個檔案跟thsr_bot放在同一個資料夾再執行喔！
