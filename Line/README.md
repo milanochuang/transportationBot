@@ -15,9 +15,13 @@
 1. 首先，你要先有個Line帳號（只要是台灣人應該都有吧？🤔）
 2. 登入[LINE DEVELOPER](https://developers.line.biz/zh-hant/)
 3. 請選擇Product中的Message API
+
 ![](https://i.imgur.com/cZ03aFx.png)
+
 4. 按下Start Now
+
 ![](https://i.imgur.com/Mv2wGA7.png)
+
 5. 填入基本資訊
     * Provider: 填入你自取的名字，這不是機器人的名字，不用擔心
     * Channel Name: 這就是機器人的名字，想個有趣又好記的名字吧
