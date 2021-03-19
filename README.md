@@ -76,6 +76,7 @@ $ pip install dateparser
 2. 尋找「取得票價資料」以及「取得所有車次的定期時刻表資料」
 3. 將Value裡所有的值都留空，以取得全部資料，按下Try it out
 4. 將下面出現的Request URL貼到[THSR.py](https://github.com/milanochuang/transportationBot/blob/master/THSR.py)指定的函式中
+```timetableUrl = ""```與```TrainTicketPriceUrl = ""```中的```""```
 5. 再執行[THSR.py](https://github.com/milanochuang/transportationBot/blob/master/THSR.py)即可下載最新資料
 
 ## 相關Repositories
